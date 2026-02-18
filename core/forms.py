@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class UserCreateForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", "first_name", "last_name", "email", "is_active")
+        fields = ("username", "first_name", "last_name", "email", "is_active", "is_staff")
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -23,7 +23,7 @@ class UserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email", "is_active")
+        fields = ("username", "first_name", "last_name", "email", "is_active", "is_staff")
 
     def clean(self):
         cleaned = super().clean()

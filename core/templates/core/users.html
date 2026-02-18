@@ -6,7 +6,9 @@
 
 {% block content %}
   <div class="actions">
-    <a class="button button-inline" href="{% url 'user_create' %}">Crear usuario</a>
+    <a class="mdc-button mdc-button--raised" href="{% url 'user_create' %}">
+      <span class="mdc-button__label">Crear usuario</span>
+    </a>
   </div>
   <table class="table">
     <thead>
@@ -26,10 +28,14 @@
           <td>{{ user.email }}</td>
           <td>{% if user.is_active %}Sí{% else %}No{% endif %}</td>
           <td class="actions-cell">
-            <a class="link" href="{% url 'user_edit' user.id %}">Editar</a>
+            <a class="mdc-button mdc-button--outlined" href="{% url 'user_edit' user.id %}">
+              <span class="mdc-button__label">Editar</span>
+            </a>
             <form method="post" action="{% url 'user_delete' user.id %}">
               {% csrf_token %}
-              <button class="link danger" type="submit">Eliminar</button>
+              <button class="mdc-button mdc-button--outlined danger" type="submit">
+                <span class="mdc-button__label">Eliminar</span>
+              </button>
             </form>
           </td>
         </tr>

@@ -5,36 +5,88 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" />
     <link rel="stylesheet" href="{% static 'core/styles.css' %}" />
     {% block extra_head %}{% endblock %}
   </head>
-  <body>
-    <div class="layout">
-      <aside class="sidebar">
+  <body class="mdc-typography">
+    <aside class="mdc-drawer mdc-drawer--dismissible">
+      <div class="mdc-drawer__header">
         <div class="brand">
           <div class="brand-mark">DC</div>
           <div>
             <div class="meta">Home</div>
-            <h1>Dashboard</h1>
+            <div class="brand-title">Dashboard</div>
           </div>
         </div>
-        <nav class="nav">
-          <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+      </div>
+      <div class="mdc-drawer__content">
+        <nav class="mdc-list">
+          <a class="mdc-list-item {% if active_page == 'dashboard' %}mdc-list-item--activated{% endif %}" href="{% url 'dashboard' %}">
+            <span class="mdc-list-item__ripple"></span>
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">dashboard</i>
+            <span class="mdc-list-item__text">Dashboard</span>
+          </a>
           {% if request.user.is_staff %}
-            <a class="nav-link {% if active_page == 'users' %}active{% endif %}" href="{% url 'users' %}">Usuarios</a>
+            <a class="mdc-list-item {% if active_page == 'users' %}mdc-list-item--activated{% endif %}" href="{% url 'users' %}">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">group</i>
+              <span class="mdc-list-item__text">Usuarios</span>
+            </a>
           {% endif %}
           <form class="logout-form" method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-            <button class="nav-link logout" type="submit">Log out</button>
+            <button class="mdc-list-item logout-button" type="submit">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">logout</i>
+              <span class="mdc-list-item__text">Log out</span>
+            </button>
           </form>
         </nav>
-      </aside>
-      <main class="content">
-        <header class="content-header">
-          <h2>{% block heading %}{% endblock %}</h2>
-        </header>
-        {% block content %}{% endblock %}
+      </div>
+    </aside>
+
+    <div class="mdc-drawer-app-content">
+      <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+            <span class="mdc-top-app-bar__title">{% block heading %}{% endblock %}</span>
+          </section>
+        </div>
+      </header>
+
+      <main class="main-content" id="main-content">
+        <div class="content-card mdc-elevation--z2">
+          {% block content %}{% endblock %}
+        </div>
       </main>
     </div>
+
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script>
+      mdc.autoInit();
+      const drawer = document.querySelector(".mdc-drawer");
+      const topAppBar = document.querySelector(".mdc-top-app-bar");
+      const mainContent = document.querySelector(".main-content");
+
+      if (drawer && topAppBar) {
+        const drawerInstance = mdc.drawer.MDCDrawer.attachTo(drawer);
+        const topAppBarInstance = mdc.topAppBar.MDCTopAppBar.attachTo(topAppBar);
+        topAppBarInstance.setScrollTarget(mainContent);
+        topAppBarInstance.listen("MDCTopAppBar:nav", () => {
+          drawerInstance.open = !drawerInstance.open;
+        });
+
+        const mediaQuery = window.matchMedia("(max-width: 900px)");
+        const syncDrawer = () => {
+          drawerInstance.open = !mediaQuery.matches;
+        };
+        syncDrawer();
+        mediaQuery.addEventListener("change", syncDrawer);
+      }
+    </script>
   </body>
 </html>
