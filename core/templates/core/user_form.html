@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block heading %}{{ title }}{% endblock %}
+
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-grid">
+      {{ form.as_p }}
+    </div>
+    <div class="actions">
+      <button class="button button-inline" type="submit">Guardar</button>
+      <a class="link" href="{% url 'users' %}">Cancelar</a>
+    </div>
+  </form>
+{% endblock %}
