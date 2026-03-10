@@ -191,6 +191,10 @@ cat > "${INSTALL_DIR}/config/local_settings.py" << PYEOF
 #  NO subir este archivo a git (añadir a .gitignore)
 # =============================================================================
 import os
+from pathlib import Path
+
+# BASE_DIR apunta a la raíz del proyecto (igual que en settings.py)
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False
 
