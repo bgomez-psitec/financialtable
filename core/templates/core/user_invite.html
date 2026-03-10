@@ -1,0 +1,159 @@
+{% extends "core/base.html" %}
+{% block title %}Enviar invitación — DataContaBL{% endblock %}
+
+{% block content %}
+<div class="dc-page-header">
+  <div>
+    <h1 class="dc-page-title">Enviar invitación</h1>
+    <p class="dc-page-subtitle">Usuario creado correctamente. Puedes enviarle un email de bienvenida.</p>
+  </div>
+</div>
+
+<div style="max-width:680px;">
+
+  <!-- Tarjeta de usuario creado -->
+  <div class="invite-user-card">
+    <div class="invite-user-avatar">
+      <i class="fa-solid fa-user-check"></i>
+    </div>
+    <div class="invite-user-info">
+      <div class="invite-user-name">
+        {{ invited_user.get_full_name|default:invited_user.username }}
+      </div>
+      <div class="invite-user-meta">
+        <span><i class="fa-solid fa-at"></i> {{ invited_user.username }}</span>
+        {% if invited_user.email %}
+          <span><i class="fa-solid fa-envelope"></i> {{ invited_user.email }}</span>
+        {% endif %}
+        {% if invited_user.is_staff %}
+          <span class="dc-badge dc-badge--green" style="margin-left:2px;">Staff</span>
+        {% endif %}
+        {% if not invited_user.is_active %}
+          <span class="dc-badge dc-badge--red" style="margin-left:2px;">Inactivo</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="invite-user-status">
+      <i class="fa-solid fa-circle-check" style="color:var(--dc-accent);font-size:1.5rem;"></i>
+    </div>
+  </div>
+
+  {% if send_error %}
+    <div class="dc-alert dc-alert--danger" style="margin-bottom:16px;">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ send_error }}</span>
+    </div>
+  {% endif %}
+
+  {% if not has_smtp %}
+    <div class="dc-alert dc-alert--warning" style="margin-bottom:16px;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span>
+        No hay configuración SMTP disponible. No se puede enviar el email.
+        <a href="{% url 'smtp_config' %}" style="font-weight:600;">Configurar SMTP</a>
+      </span>
+    </div>
+  {% elif not has_email %}
+    <div class="dc-alert dc-alert--warning" style="margin-bottom:16px;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span>Este usuario no tiene email. No se puede enviar la invitación.</span>
+    </div>
+  {% endif %}
+
+  <!-- Formulario de email -->
+  {% if has_smtp and has_email %}
+  <div class="dc-card" style="margin-bottom:16px;">
+    <div class="dc-card__header">
+      <span class="dc-card__title">
+        <i class="fa-solid fa-paper-plane" style="color:var(--dc-accent);margin-right:6px;"></i>
+        Email de invitación
+      </span>
+    </div>
+    <div class="dc-card__body">
+      <form method="post" id="inviteForm">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="send">
+
+        <div class="invite-field">
+          <label class="invite-label" for="to_email">
+            <i class="fa-solid fa-envelope"></i> Para
+          </label>
+          <input
+            type="email"
+            id="to_email"
+            name="to_email"
+            class="invite-input"
+            value="{{ to_email }}"
+            required
+          >
+        </div>
+
+        <div class="invite-field">
+          <label class="invite-label" for="subject">
+            <i class="fa-solid fa-tag"></i> Asunto
+          </label>
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            class="invite-input"
+            value="{{ subject }}"
+            required
+          >
+        </div>
+
+        <div class="invite-field">
+          <label class="invite-label" for="body">
+            <i class="fa-solid fa-align-left"></i> Mensaje
+          </label>
+          <textarea
+            id="body"
+            name="body"
+            class="invite-textarea"
+            rows="12"
+            required
+          >{{ body }}</textarea>
+          <p class="invite-hint">
+            <i class="fa-regular fa-circle-info"></i>
+            Puedes editar el mensaje antes de enviarlo.
+          </p>
+        </div>
+
+        <div class="invite-actions">
+          <button type="submit" class="btn-accent" style="padding:9px 20px;font-size:.875rem;">
+            <i class="fa-solid fa-paper-plane"></i> Enviar invitación
+          </button>
+          <button
+            type="submit"
+            form="skipForm"
+            class="btn-ghost"
+            style="padding:9px 20px;font-size:.875rem;"
+          >
+            <i class="fa-solid fa-forward"></i> Omitir
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <!-- Sin SMTP o sin email: solo botón omitir -->
+  <div style="margin-top:8px;">
+  {% endif %}
+
+  <!-- Formulario skip (siempre presente) -->
+  <form method="post" id="skipForm">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="skip">
+    {% if not has_smtp or not has_email %}
+      <button type="submit" class="btn-ghost" style="padding:9px 20px;font-size:.875rem;">
+        <i class="fa-solid fa-arrow-left"></i> Volver a Usuarios
+      </button>
+    {% endif %}
+  </form>
+
+  {% if not has_smtp or not has_email %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

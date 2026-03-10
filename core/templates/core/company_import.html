@@ -1,0 +1,71 @@
+{% extends "core/base.html" %}
+
+{% block title %}Importar empresas{% endblock %}
+
+{% block content %}
+  <div class="dc-page-header">
+    <h1 class="dc-page-title">Importar empresas</h1>
+    <div class="dc-page-actions">
+      <a class="btn-ghost" href="{% url 'companies' %}">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+
+  <div class="dc-card" style="max-width:600px;">
+    <div class="dc-card__body dc-form">
+
+      <div class="dc-alert dc-alert--warning">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>
+          El CSV debe incluir los encabezados originales (por ejemplo:
+          <code>GD_SOCIEDAD</code>, <code>GD_INTERNAL_CODE</code>, <code>GD_DESCRIPCION</code>…).
+          Las filas sin <strong>GD_SOCIEDAD</strong> se descartarán.
+        </span>
+      </div>
+
+      {% if imported %}
+        <div class="dc-alert dc-alert--success">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Importadas <strong>{{ imported }}</strong> empresa{{ imported|pluralize }}.</span>
+        </div>
+      {% endif %}
+
+      {% if errors %}
+        <div class="dc-alert dc-alert--danger">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <div>
+            <ul class="mb-0 ps-3">
+              {% for error in errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="csv_file">Archivo CSV</label>
+          <input
+            class="form-control-file"
+            id="csv_file"
+            name="csv_file"
+            type="file"
+            accept=".csv"
+            required
+            style="display:block;margin-top:6px;"
+          />
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px;">
+          <button class="btn-accent" type="submit">
+            <i class="fa-solid fa-file-import"></i> Importar
+          </button>
+          <a class="btn-ghost" href="{% url 'companies' %}">Cancelar</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

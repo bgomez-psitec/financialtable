@@ -1,0 +1,167 @@
+{% extends "core/base.html" %}
+
+{% block title %}Empresas{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+{% endblock %}
+
+{% block content %}
+  {% if company_invited %}
+    <div class="dc-alert dc-alert--success" style="margin-bottom:20px;">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Invitación enviada correctamente al CEO de la empresa.</span>
+    </div>
+  {% endif %}
+
+  <div class="dc-page-header">
+    <h1 class="dc-page-title">Empresas</h1>
+    <div class="dc-page-actions">
+      <button class="btn-ghost" id="export-selected-btn" type="button">
+        <i class="fa-solid fa-file-export"></i> Exportar CSV
+      </button>
+      {% if request.user.is_staff %}
+        <a class="btn-ghost" href="{% url 'company_import' %}">
+          <i class="fa-solid fa-file-import"></i> Importar CSV
+        </a>
+        <a class="btn-accent" href="{% url 'company_create' %}">
+          <i class="fa-solid fa-plus"></i> Nueva empresa
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="dc-card">
+    <div class="dc-card__header">
+      <span class="dc-card__title">Listado de inversiones</span>
+    </div>
+    <div class="dc-card__body--flush dc-table-wrap">
+      <table id="companies-table" class="dc-table table">
+        <thead>
+          <tr>
+            <th class="text-center" style="width:40px;">
+              <input type="checkbox" id="select-all-companies" />
+            </th>
+            <th>Empresa</th>
+            <th>Código</th>
+            <th>CIF</th>
+            <th>País</th>
+            <th>Estadio</th>
+            <th>Tech sector</th>
+            <th>CEO</th>
+            <th>Email CEO</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for company in companies %}
+            <tr>
+              <td class="text-center">
+                <input type="checkbox" class="company-select" value="{{ company.id }}" />
+              </td>
+              <td>
+                {% if company.gd_logo %}
+                  <img src="{{ company.gd_logo.url }}" alt="Logo" style="height:24px;width:auto;margin-right:6px;vertical-align:middle;" />
+                {% endif %}
+                {{ company.gd_sociedad }}
+              </td>
+              <td>{{ company.gd_internal_code|default:"" }}</td>
+              <td>{{ company.gd_cif|default:"" }}</td>
+              <td>{{ company.gd_pais|default:"" }}</td>
+              <td>
+                {% if company.cd_estadio %}
+                  <span class="dc-badge dc-badge--green">{{ company.cd_estadio }}</span>
+                {% endif %}
+              </td>
+              <td>{{ company.cd_tech_sector|default:"" }}</td>
+              <td>{{ company.gd_ceo|default:"" }}</td>
+              <td>{{ company.gd_email_ceo|default:"" }}</td>
+              <td>{{ company.gd_phone_ceo|default:"" }}</td>
+              <td class="actions-cell">
+                <a class="btn-ghost" href="{% url 'company_edit' company.id %}">
+                  <i class="fa-solid fa-pen-to-square"></i> Editar
+                </a>
+                {% if request.user.is_staff %}
+                  {% if company.gd_email_ceo %}
+                    <a
+                      class="btn-ghost"
+                      href="{% url 'company_invite' company.id %}"
+                      title="Enviar invitación al CEO ({{ company.gd_email_ceo }})"
+                      style="color:var(--dc-accent);border-color:var(--dc-accent);"
+                    >
+                      <i class="fa-solid fa-envelope-open-text"></i>
+                    </a>
+                  {% else %}
+                    <button
+                      class="btn-ghost"
+                      type="button"
+                      disabled
+                      title="Sin email de CEO"
+                      style="opacity:.35;cursor:not-allowed;"
+                    >
+                      <i class="fa-solid fa-envelope-open-text"></i>
+                    </button>
+                  {% endif %}
+                  <form method="post" action="{% url 'company_delete' company.id %}">
+                    {% csrf_token %}
+                    <button class="btn-danger-ghost" type="submit">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="11" class="text-center py-4" style="color:var(--dc-text-muted);">
+                No hay registros.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <form id="export-companies-form" method="post" action="{% url 'company_export_select' %}">
+    {% csrf_token %}
+    <input type="hidden" name="company_ids" id="export-company-ids" />
+  </form>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+  <script>
+    $(function () {
+      $('#companies-table').DataTable({
+        pageLength: 10,
+        order: [[1, 'asc']],
+        columnDefs: [
+          { orderable: false, targets: [0, 10] },
+        ],
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json',
+        },
+      });
+
+      $('#select-all-companies').on('change', function () {
+        var checked = $(this).is(':checked');
+        $('.company-select').prop('checked', checked);
+      });
+
+      $('#export-selected-btn').on('click', function () {
+        var ids = $('.company-select:checked').map(function () {
+          return $(this).val();
+        }).get();
+        if (!ids.length) {
+          alert('Selecciona al menos una empresa para exportar.');
+          return;
+        }
+        $('#export-company-ids').val(ids.join(','));
+        $('#export-companies-form').submit();
+      });
+    });
+  </script>
+{% endblock %}

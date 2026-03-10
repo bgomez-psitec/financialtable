@@ -1,0 +1,124 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verificación — DataContaBL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'core/styles.css' %}" />
+  </head>
+  <body class="dc-login-body">
+
+    <div class="dc-login-card">
+
+      <div class="dc-login-header">
+        <div class="dc-login-logo">Data<span>Conta</span>BL</div>
+        <div class="dc-login-sub">Verificación en dos pasos</div>
+      </div>
+
+      <div class="dc-login-body-inner">
+
+        {% if error %}
+          <div class="dc-alert dc-alert--danger" style="margin-bottom:16px;">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>{{ error }}</span>
+          </div>
+        {% endif %}
+
+        {% if resend_ok %}
+          <div class="dc-alert dc-alert--success" style="margin-bottom:16px;">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Código reenviado correctamente.</span>
+          </div>
+        {% endif %}
+
+        {% if blocked or expired %}
+          <!-- Estado bloqueado / expirado: solo mostrar botón de volver -->
+          <div style="text-align:center;margin-top:8px;">
+            <a href="{% url 'home' %}" class="dc-login-btn" style="display:block;text-decoration:none;text-align:center;">
+              <i class="fa-solid fa-arrow-left"></i> Volver al inicio de sesión
+            </a>
+          </div>
+
+        {% else %}
+          <!-- Instrucción -->
+          <p class="tfa-hint">
+            <i class="fa-solid fa-envelope" style="color:var(--dc-accent);"></i>
+            Hemos enviado un código de <strong>6 dígitos</strong> a<br>
+            <span class="tfa-email">{{ masked_email }}</span>
+          </p>
+
+          <!-- Formulario verificar -->
+          <form method="post" novalidate autocomplete="off">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="verify">
+
+            <div class="dc-login-field">
+              <label for="code">Código de verificación</label>
+              <div class="dc-input-wrap">
+                <i class="fa-solid fa-shield-halved"></i>
+                <input
+                  id="code"
+                  name="code"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]{6}"
+                  maxlength="6"
+                  placeholder="000000"
+                  autocomplete="one-time-code"
+                  required
+                  autofocus
+                  class="tfa-code-input"
+                />
+              </div>
+            </div>
+
+            <button type="submit" class="dc-login-btn">
+              <i class="fa-solid fa-check"></i> Verificar
+            </button>
+          </form>
+
+          <!-- Acciones secundarias -->
+          <div class="tfa-actions">
+            <form method="post" style="margin:0;">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="resend">
+              <button type="submit" class="tfa-link-btn">
+                <i class="fa-solid fa-rotate-right"></i> Reenviar código
+              </button>
+            </form>
+            <a href="{% url 'home' %}" class="tfa-link-btn">
+              <i class="fa-solid fa-arrow-left"></i> Otro usuario
+            </a>
+          </div>
+
+          <!-- Nota de expiración -->
+          <p class="tfa-expire-note">
+            <i class="fa-regular fa-clock"></i>
+            El código expira en 10 minutos.
+          </p>
+
+        {% endif %}
+
+      </div><!-- /dc-login-body-inner -->
+    </div><!-- /dc-login-card -->
+
+    <script>
+      /* Auto-submit cuando se completan los 6 dígitos */
+      var codeInput = document.getElementById('code');
+      if (codeInput) {
+        codeInput.addEventListener('input', function () {
+          this.value = this.value.replace(/\D/g, '').slice(0, 6);
+          if (this.value.length === 6) {
+            this.closest('form').submit();
+          }
+        });
+      }
+    </script>
+
+  </body>
+</html>

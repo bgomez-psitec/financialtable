@@ -1,17 +1,17 @@
 {% extends "core/base.html" %}
 
-{% block title %}Eliminar usuario{% endblock %}
+{% block title %}Eliminar empresa{% endblock %}
 
 {% block content %}
   <div class="dc-confirm-wrap">
     <div class="dc-card">
       <div class="dc-card__body" style="text-align:center;padding:32px 24px;">
         <div class="dc-confirm-icon">
-          <i class="fa-solid fa-user-xmark"></i>
+          <i class="fa-solid fa-building-circle-xmark"></i>
         </div>
-        <p class="dc-confirm-title">¿Eliminar usuario?</p>
+        <p class="dc-confirm-title">¿Eliminar empresa?</p>
         <p class="dc-confirm-text">
-          Se eliminará permanentemente el usuario <strong>{{ user.username }}</strong>.
+          Se eliminará permanentemente <strong>{{ company.gd_sociedad }}</strong>.
           Esta acción no se puede deshacer.
         </p>
         <div class="dc-confirm-actions">
@@ -21,7 +21,7 @@
               <i class="fa-solid fa-trash"></i> Eliminar
             </button>
           </form>
-          <a class="btn-ghost" href="{% url 'users' %}">Cancelar</a>
+          <a class="btn-ghost" href="{% url 'companies' %}">Cancelar</a>
         </div>
       </div>
     </div>

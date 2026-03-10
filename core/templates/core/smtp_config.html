@@ -1,0 +1,296 @@
+{% extends "core/base.html" %}
+{% block title %}Configuración SMTP – DataContaBL{% endblock %}
+
+{% block content %}
+<div class="dc-page-header">
+  <div>
+    <h1 class="dc-page-title">Configuración SMTP</h1>
+    <p class="dc-page-subtitle">Parámetros para el envío de emails desde la plataforma</p>
+  </div>
+</div>
+
+<div style="max-width:780px;">
+
+  {% if success %}
+  <div class="dc-alert dc-alert--success" style="margin-bottom:20px;">
+    <i class="fa-solid fa-circle-check"></i> {{ success }}
+  </div>
+  {% endif %}
+
+  {% if form.non_field_errors %}
+  <div class="dc-alert dc-alert--danger" style="margin-bottom:20px;">
+    <i class="fa-solid fa-triangle-exclamation"></i> {{ form.non_field_errors|striptags }}
+  </div>
+  {% endif %}
+
+  <!-- ── Formulario principal ── -->
+  <form method="post" id="smtp-form">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="save">
+
+    <!-- Conexión -->
+    <div class="air-section">
+      <div class="air-section-header">
+        <i class="fa-solid fa-server"></i> Conexión
+      </div>
+      <div class="air-section-body">
+
+        <div class="air-grid-2">
+          <!-- Host -->
+          <div class="form-group">
+            <label for="{{ form.host.id_for_label }}">Servidor SMTP</label>
+            <input
+              class="form-control {% if form.host.errors %}is-invalid{% endif %}"
+              id="{{ form.host.id_for_label }}"
+              name="host"
+              type="text"
+              value="{{ form.host.value|default_if_none:'' }}"
+              placeholder="smtp.gmail.com"
+            >
+            {% if form.host.errors %}
+              <div class="invalid-feedback">{{ form.host.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Puerto -->
+          <div class="form-group">
+            <label for="{{ form.port.id_for_label }}">Puerto</label>
+            <input
+              class="form-control {% if form.port.errors %}is-invalid{% endif %}"
+              id="{{ form.port.id_for_label }}"
+              name="port"
+              type="number"
+              min="1"
+              max="65535"
+              value="{{ form.port.value|default_if_none:'587' }}"
+              placeholder="587"
+            >
+            {% if form.port.errors %}
+              <div class="invalid-feedback">{{ form.port.errors|striptags }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="air-grid-2">
+          <!-- Usuario -->
+          <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">Usuario / Email de autenticación</label>
+            <input
+              class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+              id="{{ form.username.id_for_label }}"
+              name="username"
+              type="text"
+              value="{{ form.username.value|default_if_none:'' }}"
+              autocomplete="off"
+              placeholder="usuario@ejemplo.com"
+            >
+            {% if form.username.errors %}
+              <div class="invalid-feedback">{{ form.username.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Contraseña con toggle de visibilidad -->
+          <div class="form-group">
+            <label for="id_smtp_password">Contraseña</label>
+            <div class="input-group">
+              <input
+                class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                id="id_smtp_password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="{% if config.password %}••••••••{% else %}Sin contraseña guardada{% endif %}"
+              >
+              <button class="btn btn-outline-secondary" type="button" id="toggle-password" tabindex="-1" title="Mostrar/ocultar contraseña">
+                <i class="fa-solid fa-eye" id="toggle-icon"></i>
+              </button>
+            </div>
+            <div style="font-size:11px;margin-top:4px;color:var(--dc-text-muted);">
+              {% if config.password %}
+                <i class="fa-solid fa-circle-check" style="color:var(--dc-accent);"></i>
+                Contraseña guardada. Deja en blanco para no cambiarla.
+              {% else %}
+                Sin contraseña guardada.
+              {% endif %}
+            </div>
+            {% if form.password.errors %}
+              <div class="invalid-feedback d-block">{{ form.password.errors|striptags }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="air-grid-2">
+          <!-- Email remitente -->
+          <div class="form-group">
+            <label for="{{ form.from_email.id_for_label }}">Email remitente</label>
+            <input
+              class="form-control {% if form.from_email.errors %}is-invalid{% endif %}"
+              id="{{ form.from_email.id_for_label }}"
+              name="from_email"
+              type="email"
+              value="{{ form.from_email.value|default_if_none:'' }}"
+              placeholder="no-reply@ejemplo.com"
+            >
+            {% if form.from_email.errors %}
+              <div class="invalid-feedback">{{ form.from_email.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Nombre remitente -->
+          <div class="form-group">
+            <label for="{{ form.from_name.id_for_label }}">Nombre remitente</label>
+            <input
+              class="form-control {% if form.from_name.errors %}is-invalid{% endif %}"
+              id="{{ form.from_name.id_for_label }}"
+              name="from_name"
+              type="text"
+              value="{{ form.from_name.value|default_if_none:'' }}"
+              placeholder="DataContaBL"
+            >
+            {% if form.from_name.errors %}
+              <div class="invalid-feedback">{{ form.from_name.errors|striptags }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Seguridad -->
+    <div class="air-section">
+      <div class="air-section-header">
+        <i class="fa-solid fa-shield-halved"></i> Seguridad
+      </div>
+      <div class="air-section-body">
+        <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:center;">
+
+          <label class="smtp-check-label">
+            <input
+              type="checkbox"
+              name="use_tls"
+              id="{{ form.use_tls.id_for_label }}"
+              {% if form.use_tls.value %}checked{% endif %}
+              class="smtp-check"
+            >
+            <span>Usar TLS</span>
+            <span class="smtp-check-hint">(recomendado — puerto 587)</span>
+          </label>
+
+          <label class="smtp-check-label">
+            <input
+              type="checkbox"
+              name="use_ssl"
+              id="{{ form.use_ssl.id_for_label }}"
+              {% if form.use_ssl.value %}checked{% endif %}
+              class="smtp-check"
+            >
+            <span>Usar SSL</span>
+            <span class="smtp-check-hint">(puerto 465)</span>
+          </label>
+
+        </div>
+        <p style="font-size:11px;color:var(--dc-text-muted);margin-top:10px;margin-bottom:0;">
+          <i class="fa-solid fa-circle-info"></i>
+          No actives TLS y SSL al mismo tiempo.
+        </p>
+      </div>
+    </div>
+
+    <!-- Última actualización -->
+    {% if config.updated_at %}
+    <p style="font-size:11px;color:var(--dc-text-muted);margin-bottom:12px;">
+      <i class="fa-regular fa-clock"></i>
+      Última actualización: {{ config.updated_at|date:"d/m/Y H:i" }}
+    </p>
+    {% endif %}
+
+    <button type="submit" class="btn-accent">
+      <i class="fa-solid fa-floppy-disk"></i> Guardar configuración
+    </button>
+  </form>
+
+  <!-- ── Email de prueba ── -->
+  <div class="air-section" style="margin-top:32px;">
+    <div class="air-section-header">
+      <i class="fa-solid fa-paper-plane"></i> Email de prueba
+    </div>
+    <div class="air-section-body">
+
+      {% if test_success %}
+      <div class="dc-alert dc-alert--success" style="margin-bottom:14px;">
+        <i class="fa-solid fa-circle-check"></i> {{ test_success }}
+      </div>
+      {% endif %}
+      {% if test_error %}
+      <div class="dc-alert dc-alert--danger" style="margin-bottom:14px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> {{ test_error }}
+      </div>
+      {% endif %}
+
+      <p style="font-size:13px;color:var(--dc-text-muted);margin-bottom:14px;">
+        Envía un email de prueba usando la configuración SMTP actualmente guardada para verificar que la conexión funciona correctamente.
+      </p>
+
+      <form method="post" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="test_email">
+        <div class="form-group" style="flex:1;min-width:220px;margin-bottom:0;">
+          <label for="test_recipient" style="margin-bottom:4px;">Email destinatario</label>
+          <input
+            type="email"
+            class="form-control"
+            id="test_recipient"
+            name="test_recipient"
+            placeholder="destinatario@ejemplo.com"
+            required
+          >
+        </div>
+        <div>
+          <button
+            type="submit"
+            class="btn-accent"
+            {% if not config.host %}disabled title="Guarda primero la configuración SMTP"{% endif %}
+          >
+            <i class="fa-solid fa-paper-plane"></i> Enviar prueba
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  var btn = document.getElementById('toggle-password');
+  var inp = document.getElementById('id_smtp_password');
+  var ico = document.getElementById('toggle-icon');
+  if (btn && inp && ico) {
+    btn.addEventListener('click', function () {
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        ico.className = 'fa-solid fa-eye-slash';
+      } else {
+        inp.type = 'password';
+        ico.className = 'fa-solid fa-eye';
+      }
+    });
+  }
+
+  /* Advertencia si se activan TLS y SSL simultáneamente */
+  var chkTls = document.getElementById('{{ form.use_tls.id_for_label }}');
+  var chkSsl = document.getElementById('{{ form.use_ssl.id_for_label }}');
+  function warnTlsSsl() {
+    if (chkTls && chkSsl && chkTls.checked && chkSsl.checked) {
+      chkSsl.checked = false;
+      alert('No puedes activar TLS y SSL al mismo tiempo. Se ha desactivado SSL.');
+    }
+  }
+  if (chkTls) chkTls.addEventListener('change', warnTlsSsl);
+  if (chkSsl) chkSsl.addEventListener('change', warnTlsSsl);
+})();
+</script>
+{% endblock %}

@@ -2,149 +2,252 @@
 
 {% block title %}{{ title }}{% endblock %}
 
-{% block heading %}{{ title }}{% endblock %}
-
 {% block content %}
-  <form method="post" class="form-grid">
-    {% csrf_token %}
-
-    {% if form.non_field_errors %}
-      <div class="error">{{ form.non_field_errors|striptags }}</div>
-    {% endif %}
-
-    <div class="form-row">
-      <label class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
-        <input class="mdc-text-field__input" id="id_username" name="username" type="text" value="{{ form.username.value|default_if_none:'' }}" required />
-        <span class="mdc-notched-outline">
-          <span class="mdc-notched-outline__leading"></span>
-          <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" id="username-label">Usuario</span>
-          </span>
-          <span class="mdc-notched-outline__trailing"></span>
-        </span>
-      </label>
-      {% if form.username.errors %}<div class="error">{{ form.username.errors|striptags }}</div>{% endif %}
+  <div class="dc-page-header">
+    <h1 class="dc-page-title">{{ title }}</h1>
+    <div class="dc-page-actions">
+      <a class="btn-ghost" href="{% url 'users' %}">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </a>
     </div>
+  </div>
 
-    <div class="form-row">
-      <label class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
-        <input class="mdc-text-field__input" id="id_first_name" name="first_name" type="text" value="{{ form.first_name.value|default_if_none:'' }}" />
-        <span class="mdc-notched-outline">
-          <span class="mdc-notched-outline__leading"></span>
-          <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" id="first-name-label">Nombre</span>
-          </span>
-          <span class="mdc-notched-outline__trailing"></span>
-        </span>
-      </label>
-      {% if form.first_name.errors %}<div class="error">{{ form.first_name.errors|striptags }}</div>{% endif %}
-    </div>
+  <div class="dc-card" style="max-width:860px;">
+    <div class="dc-card__body dc-form">
+      <form method="post" novalidate id="user-form">
+        {% csrf_token %}
 
-    <div class="form-row">
-      <label class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
-        <input class="mdc-text-field__input" id="id_last_name" name="last_name" type="text" value="{{ form.last_name.value|default_if_none:'' }}" />
-        <span class="mdc-notched-outline">
-          <span class="mdc-notched-outline__leading"></span>
-          <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" id="last-name-label">Apellidos</span>
-          </span>
-          <span class="mdc-notched-outline__trailing"></span>
-        </span>
-      </label>
-      {% if form.last_name.errors %}<div class="error">{{ form.last_name.errors|striptags }}</div>{% endif %}
-    </div>
+        {% if form.non_field_errors %}
+          <div class="dc-alert dc-alert--danger">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>{{ form.non_field_errors|striptags }}</span>
+          </div>
+        {% endif %}
 
-    <div class="form-row">
-      <label class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
-        <input class="mdc-text-field__input" id="id_email" name="email" type="email" value="{{ form.email.value|default_if_none:'' }}" />
-        <span class="mdc-notched-outline">
-          <span class="mdc-notched-outline__leading"></span>
-          <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" id="email-label">Email</span>
-          </span>
-          <span class="mdc-notched-outline__trailing"></span>
-        </span>
-      </label>
-      {% if form.email.errors %}<div class="error">{{ form.email.errors|striptags }}</div>{% endif %}
-    </div>
-
-    <div class="form-row">
-      <label class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
-        <input class="mdc-text-field__input" id="id_password1" name="password1" type="password" autocomplete="new-password" />
-        <span class="mdc-notched-outline">
-          <span class="mdc-notched-outline__leading"></span>
-          <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" id="password1-label">Nueva contraseña</span>
-          </span>
-          <span class="mdc-notched-outline__trailing"></span>
-        </span>
-      </label>
-      {% if form.password1.errors %}<div class="error">{{ form.password1.errors|striptags }}</div>{% endif %}
-    </div>
-
-    <div class="form-row">
-      <label class="mdc-text-field mdc-text-field--outlined" data-mdc-auto-init="MDCTextField">
-        <input class="mdc-text-field__input" id="id_password2" name="password2" type="password" autocomplete="new-password" />
-        <span class="mdc-notched-outline">
-          <span class="mdc-notched-outline__leading"></span>
-          <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" id="password2-label">Confirmar contraseña</span>
-          </span>
-          <span class="mdc-notched-outline__trailing"></span>
-        </span>
-      </label>
-      {% if form.password2.errors %}<div class="error">{{ form.password2.errors|striptags }}</div>{% endif %}
-    </div>
-
-    <div class="form-row">
-      <div class="mdc-form-field">
-        <div class="mdc-checkbox" data-mdc-auto-init="MDCCheckbox">
+        <div class="form-group">
+          <label for="id_username">Usuario</label>
           <input
-            type="checkbox"
-            class="mdc-checkbox__native-control"
-            id="id_is_active"
-            name="is_active"
-            {% if form.is_active.value %}checked{% endif %}
+            class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+            id="id_username"
+            name="username"
+            type="text"
+            value="{{ form.username.value|default_if_none:'' }}"
+            required
           />
-          <div class="mdc-checkbox__background">
-            <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-              <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
-            </svg>
-            <div class="mdc-checkbox__mixedmark"></div>
+          {% if form.username.errors %}
+            <div class="invalid-feedback">{{ form.username.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="air-grid-2">
+          <div class="form-group">
+            <label for="id_first_name">Nombre</label>
+            <input
+              class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
+              id="id_first_name"
+              name="first_name"
+              type="text"
+              value="{{ form.first_name.value|default_if_none:'' }}"
+            />
+            {% if form.first_name.errors %}
+              <div class="invalid-feedback">{{ form.first_name.errors|striptags }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="id_last_name">Apellidos</label>
+            <input
+              class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
+              id="id_last_name"
+              name="last_name"
+              type="text"
+              value="{{ form.last_name.value|default_if_none:'' }}"
+            />
+            {% if form.last_name.errors %}
+              <div class="invalid-feedback">{{ form.last_name.errors|striptags }}</div>
+            {% endif %}
           </div>
         </div>
-        <label for="id_is_active">Activo</label>
-      </div>
-      {% if form.is_active.errors %}<div class="error">{{ form.is_active.errors|striptags }}</div>{% endif %}
-    </div>
 
-    <div class="form-row">
-      <div class="mdc-form-field">
-        <div class="mdc-checkbox" data-mdc-auto-init="MDCCheckbox">
+        <div class="form-group">
+          <label for="id_email">Email</label>
           <input
-            type="checkbox"
-            class="mdc-checkbox__native-control"
-            id="id_is_staff"
-            name="is_staff"
-            {% if form.is_staff.value %}checked{% endif %}
+            class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+            id="id_email"
+            name="email"
+            type="email"
+            value="{{ form.email.value|default_if_none:'' }}"
           />
-          <div class="mdc-checkbox__background">
-            <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-              <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
-            </svg>
-            <div class="mdc-checkbox__mixedmark"></div>
+          {% if form.email.errors %}
+            <div class="invalid-feedback">{{ form.email.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <!-- ── Dual-list: Empresas asociadas ── -->
+        <div class="form-group">
+          <label style="margin-bottom:10px;display:block;">Empresas asociadas</label>
+
+          <div class="dl-wrap">
+            <!-- Panel izquierdo: disponibles -->
+            <div class="dl-panel">
+              <span class="dl-panel-label"><i class="fa-solid fa-building"></i> Disponibles</span>
+              <input class="dl-search" type="text" placeholder="Buscar…" id="dl-search-left" />
+              <select class="dl-list" id="dl-left" multiple></select>
+              <span class="dl-count" id="dl-count-left"></span>
+            </div>
+
+            <!-- Botones centrales -->
+            <div class="dl-buttons">
+              <button type="button" class="dl-btn dl-btn--all" id="dl-add-all"    title="Añadir todas">▶▶</button>
+              <button type="button" class="dl-btn"             id="dl-add-one"    title="Añadir selección"><i class="fa-solid fa-chevron-right"></i></button>
+              <button type="button" class="dl-btn"             id="dl-remove-one" title="Quitar selección"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="dl-btn dl-btn--all" id="dl-remove-all" title="Quitar todas">◀◀</button>
+            </div>
+
+            <!-- Panel derecho: asignadas -->
+            <div class="dl-panel">
+              <span class="dl-panel-label" style="color:var(--dc-accent);"><i class="fa-solid fa-circle-check"></i> Asignadas</span>
+              <input class="dl-search" type="text" placeholder="Buscar…" id="dl-search-right" />
+              <select class="dl-list" id="dl-right" multiple></select>
+              <span class="dl-count" id="dl-count-right"></span>
+            </div>
+          </div>
+
+          <!-- Select real (oculto) — Django lo renderiza con selected correcto -->
+          <div style="display:none;">{{ form.companies }}</div>
+          {% if form.companies.errors %}
+            <div class="dc-alert dc-alert--danger" style="margin-top:6px;">{{ form.companies.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="air-grid-2">
+          <div class="form-group">
+            <label for="id_password1">Nueva contraseña</label>
+            <input
+              class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+              id="id_password1"
+              name="password1"
+              type="password"
+              autocomplete="new-password"
+            />
+            {% if form.password1.errors %}
+              <div class="invalid-feedback">{{ form.password1.errors|striptags }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="id_password2">Confirmar contraseña</label>
+            <input
+              class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+              id="id_password2"
+              name="password2"
+              type="password"
+              autocomplete="new-password"
+            />
+            {% if form.password2.errors %}
+              <div class="invalid-feedback">{{ form.password2.errors|striptags }}</div>
+            {% endif %}
           </div>
         </div>
-        <label for="id_is_staff">Staff</label>
-      </div>
-      {% if form.is_staff.errors %}<div class="error">{{ form.is_staff.errors|striptags }}</div>{% endif %}
-    </div>
 
-    <div class="form-actions">
-      <button class="mdc-button mdc-button--raised" type="submit">
-        <span class="mdc-button__label">Guardar</span>
-      </button>
-      <a class="text-link" href="{% url 'users' %}">Cancelar</a>
+        <div style="display:flex;gap:20px;margin-bottom:18px;">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="id_is_active" name="is_active"
+              {% if form.is_active.value %}checked{% endif %} />
+            <label class="form-check-label" for="id_is_active">Activo</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="id_is_staff" name="is_staff"
+              {% if form.is_staff.value %}checked{% endif %} />
+            <label class="form-check-label" for="id_is_staff">Staff (administrador)</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button class="btn-accent" type="submit">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar
+          </button>
+          <a class="btn-ghost" href="{% url 'users' %}">Cancelar</a>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
+
+<script>
+(function () {
+  var real  = document.getElementById('id_companies');
+  var left  = document.getElementById('dl-left');
+  var right = document.getElementById('dl-right');
+  var sL    = document.getElementById('dl-search-left');
+  var sR    = document.getElementById('dl-search-right');
+  var cL    = document.getElementById('dl-count-left');
+  var cR    = document.getElementById('dl-count-right');
+
+  /* ── Inicializar desde el <select> oculto ── */
+  function init() {
+    Array.from(real.options).forEach(function(opt) {
+      var li = new Option(opt.text, opt.value);
+      opt.selected ? right.add(li) : left.add(li);
+    });
+    updateCounts();
+  }
+
+  function updateCounts() {
+    cL.textContent = left.options.length  + ' empresa' + (left.options.length  !== 1 ? 's' : '');
+    cR.textContent = right.options.length + ' empresa' + (right.options.length !== 1 ? 's' : '');
+  }
+
+  /* ── Mover seleccionados ── */
+  function moveSelected(from, to) {
+    Array.from(from.selectedOptions).forEach(function(opt) {
+      to.add(new Option(opt.text, opt.value));
+      opt.remove();
+    });
+    updateCounts();
+    syncReal();
+  }
+
+  /* ── Mover todos ── */
+  function moveAll(from, to) {
+    Array.from(from.options).forEach(function(opt) { to.add(new Option(opt.text, opt.value)); });
+    while (from.options.length) from.remove(0);
+    updateCounts();
+    syncReal();
+  }
+
+  /* ── Sincronizar <select> oculto ── */
+  function syncReal() {
+    var assigned = new Set(Array.from(right.options).map(function(o){ return o.value; }));
+    Array.from(real.options).forEach(function(opt) {
+      opt.selected = assigned.has(opt.value);
+    });
+  }
+
+  /* ── Búsqueda ── */
+  function filter(list, q) {
+    q = q.toLowerCase().trim();
+    Array.from(list.options).forEach(function(opt) {
+      opt.style.display = (!q || opt.text.toLowerCase().includes(q)) ? '' : 'none';
+    });
+  }
+
+  /* ── Eventos ── */
+  left.addEventListener('dblclick',  function(){ moveSelected(left, right); });
+  right.addEventListener('dblclick', function(){ moveSelected(right, left); });
+  document.getElementById('dl-add-one').addEventListener('click',    function(){ moveSelected(left, right); });
+  document.getElementById('dl-remove-one').addEventListener('click', function(){ moveSelected(right, left); });
+  document.getElementById('dl-add-all').addEventListener('click',    function(){ moveAll(left, right); });
+  document.getElementById('dl-remove-all').addEventListener('click', function(){ moveAll(right, left); });
+  sL.addEventListener('input', function(){ filter(left,  sL.value); });
+  sR.addEventListener('input', function(){ filter(right, sR.value); });
+
+  /* ── Pre-submit: seleccionar todo el panel derecho en el real select ── */
+  document.getElementById('user-form').addEventListener('submit', function() {
+    var assigned = new Set(Array.from(right.options).map(function(o){ return o.value; }));
+    Array.from(real.options).forEach(function(opt) {
+      opt.selected = assigned.has(opt.value);
+    });
+  });
+
+  init();
+})();
+</script>
 {% endblock %}

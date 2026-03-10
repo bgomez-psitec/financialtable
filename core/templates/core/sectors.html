@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}
+
+{% block title %}Sectores{% endblock %}
+
+{% block content %}
+  <div class="dc-page-header">
+    <h1 class="dc-page-title">Sectores</h1>
+  </div>
+
+  <div class="dc-card">
+    <div class="dc-card__header">
+      <span class="dc-card__title">Listado de sectores</span>
+    </div>
+    <div class="dc-card__body" style="border-bottom:1px solid var(--dc-border);">
+      <form method="post">
+        {% csrf_token %}
+        <div class="dc-inline-add">
+          <input
+            name="nombre"
+            type="text"
+            placeholder="Nombre del nuevo sector"
+            value="{{ form.nombre.value|default_if_none:'' }}"
+            required
+          />
+          <button class="btn-accent" type="submit">
+            <i class="fa-solid fa-plus"></i> Agregar
+          </button>
+        </div>
+        {% if form.nombre.errors %}
+          <div style="color:var(--dc-danger);font-size:.78rem;margin-top:-10px;">
+            {{ form.nombre.errors|striptags }}
+          </div>
+        {% endif %}
+      </form>
+    </div>
+    <div class="dc-card__body--flush dc-table-wrap">
+      <table class="dc-table table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th style="width:100px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sector in sectors %}
+            <tr>
+              <td>{{ sector.nombre }}</td>
+              <td class="actions-cell">
+                <a class="btn-danger-ghost" href="{% url 'sector_delete' sector.id %}">
+                  <i class="fa-solid fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="2" class="text-center py-4" style="color:var(--dc-text-muted);">
+                No hay sectores.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "core/base.html" %}
+{% block title %}Enviar invitación — {{ company.gd_sociedad }} — DataContaBL{% endblock %}
+
+{% block content %}
+<div class="dc-page-header">
+  <div>
+    <h1 class="dc-page-title">Enviar invitación</h1>
+    <p class="dc-page-subtitle">Email de solicitud de información al CEO de la empresa</p>
+  </div>
+  <div class="dc-page-actions">
+    <a class="btn-ghost" href="{% url 'companies' %}">
+      <i class="fa-solid fa-arrow-left"></i> Volver
+    </a>
+  </div>
+</div>
+
+<div style="max-width:680px;">
+
+  <!-- Tarjeta de empresa -->
+  <div class="invite-user-card">
+    <div class="invite-user-avatar" style="border-radius:var(--dc-radius);">
+      {% if company.gd_logo %}
+        <img src="{{ company.gd_logo.url }}" alt="Logo" style="width:100%;height:100%;object-fit:contain;border-radius:var(--dc-radius);" />
+      {% else %}
+        <i class="fa-solid fa-building"></i>
+      {% endif %}
+    </div>
+    <div class="invite-user-info">
+      <div class="invite-user-name">{{ company.gd_sociedad }}</div>
+      <div class="invite-user-meta">
+        {% if company.gd_ceo %}
+          <span><i class="fa-solid fa-user-tie"></i> {{ company.gd_ceo }}</span>
+        {% endif %}
+        {% if company.gd_email_ceo %}
+          <span><i class="fa-solid fa-envelope"></i> {{ company.gd_email_ceo }}</span>
+        {% else %}
+          <span style="color:var(--dc-danger);"><i class="fa-solid fa-circle-exclamation"></i> Sin email de CEO</span>
+        {% endif %}
+        {% if company.gd_pais %}
+          <span><i class="fa-solid fa-location-dot"></i> {{ company.gd_pais }}</span>
+        {% endif %}
+        {% if company.cd_estadio %}
+          <span class="dc-badge dc-badge--green">{{ company.cd_estadio }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if send_error %}
+    <div class="dc-alert dc-alert--danger" style="margin-bottom:16px;">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ send_error }}</span>
+    </div>
+  {% endif %}
+
+  {% if not has_smtp %}
+    <div class="dc-alert dc-alert--warning" style="margin-bottom:16px;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span>
+        No hay configuración SMTP disponible.
+        <a href="{% url 'smtp_config' %}" style="font-weight:600;">Configurar SMTP</a>
+      </span>
+    </div>
+  {% elif not has_email %}
+    <div class="dc-alert dc-alert--warning" style="margin-bottom:16px;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span>
+        Esta empresa no tiene email de CEO registrado. Añádelo en
+        <a href="{% url 'company_edit' company.id %}" style="font-weight:600;">editar empresa</a>
+        antes de enviar la invitación.
+      </span>
+    </div>
+  {% endif %}
+
+  <!-- Formulario de email -->
+  {% if has_smtp and has_email %}
+  <div class="dc-card" style="margin-bottom:16px;">
+    <div class="dc-card__header">
+      <span class="dc-card__title">
+        <i class="fa-solid fa-envelope-open-text" style="color:var(--dc-accent);margin-right:6px;"></i>
+        Email de invitación
+      </span>
+    </div>
+    <div class="dc-card__body">
+      <form method="post" id="inviteForm">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="send">
+
+        <div class="invite-field">
+          <label class="invite-label" for="to_email">
+            <i class="fa-solid fa-envelope"></i> Para
+          </label>
+          <input
+            type="email"
+            id="to_email"
+            name="to_email"
+            class="invite-input"
+            value="{{ to_email }}"
+            required
+          >
+        </div>
+
+        <div class="invite-field">
+          <label class="invite-label" for="subject">
+            <i class="fa-solid fa-tag"></i> Asunto
+          </label>
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            class="invite-input"
+            value="{{ subject }}"
+            required
+          >
+        </div>
+
+        <div class="invite-field">
+          <label class="invite-label" for="body">
+            <i class="fa-solid fa-align-left"></i> Mensaje
+          </label>
+          <textarea
+            id="body"
+            name="body"
+            class="invite-textarea"
+            rows="14"
+            required
+          >{{ body }}</textarea>
+          <p class="invite-hint">
+            <i class="fa-regular fa-circle-info"></i>
+            Puedes editar el mensaje antes de enviarlo.
+          </p>
+        </div>
+
+        <div class="invite-actions">
+          <button type="submit" class="btn-accent" style="padding:9px 20px;font-size:.875rem;">
+            <i class="fa-solid fa-paper-plane"></i> Enviar invitación
+          </button>
+          <button
+            type="submit"
+            form="cancelForm"
+            class="btn-ghost"
+            style="padding:9px 20px;font-size:.875rem;"
+          >
+            <i class="fa-solid fa-xmark"></i> Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div style="margin-top:8px;">
+  {% endif %}
+
+  <!-- Formulario cancel (siempre presente) -->
+  <form method="post" id="cancelForm">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="cancel">
+    {% if not has_smtp or not has_email %}
+      <button type="submit" class="btn-ghost" style="padding:9px 20px;font-size:.875rem;">
+        <i class="fa-solid fa-arrow-left"></i> Volver a Empresas
+      </button>
+    {% endif %}
+  </form>
+
+  {% if not has_smtp or not has_email %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

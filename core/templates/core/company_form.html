@@ -1,0 +1,517 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="at-form-wrap">
+
+  <h1 class="at-form-title">Formulario de nueva sociedad</h1>
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="dc-alert dc-alert--danger" style="margin-bottom:20px;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ form.non_field_errors|striptags }}</span>
+      </div>
+    {% endif %}
+
+    <!-- ══════════════════════════════════════════════════
+         SECCIÓN 1: Datos Generales de la compañía
+    ══════════════════════════════════════════════════ -->
+    <div class="at-section">
+      <h2 class="at-section-title">Datos Generales de la compañía</h2>
+
+      <!-- Sociedad (full width) -->
+      <div class="at-field">
+        <label class="at-label" for="{{ form.gd_sociedad.id_for_label }}">
+          Sociedad <span class="req">*</span>
+        </label>
+        <input
+          class="at-input {% if form.gd_sociedad.errors %}is-invalid{% endif %}"
+          id="{{ form.gd_sociedad.id_for_label }}"
+          name="gd_sociedad"
+          type="text"
+          value="{{ form.gd_sociedad.value|default_if_none:'' }}"
+          required
+        />
+        {% if form.gd_sociedad.errors %}<div class="at-invalid">{{ form.gd_sociedad.errors|striptags }}</div>{% endif %}
+      </div>
+
+      <!-- CIF | Fecha constitución | Logo -->
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label" for="{{ form.gd_cif.id_for_label }}">
+            CIF <span class="req">*</span>
+          </label>
+          <input
+            class="at-input {% if form.gd_cif.errors %}is-invalid{% endif %}"
+            id="{{ form.gd_cif.id_for_label }}"
+            name="gd_cif"
+            type="text"
+            value="{{ form.gd_cif.value|default_if_none:'' }}"
+          />
+          {% if form.gd_cif.errors %}<div class="at-invalid">{{ form.gd_cif.errors|striptags }}</div>{% endif %}
+        </div>
+
+        <div class="at-field">
+          <label class="at-label" for="{{ form.gd_fecha_constitucion.id_for_label }}">
+            Fecha de constitución <span class="req">*</span>
+          </label>
+          {{ form.gd_fecha_constitucion }}
+          {% if form.gd_fecha_constitucion.errors %}<div class="at-invalid">{{ form.gd_fecha_constitucion.errors|striptags }}</div>{% endif %}
+        </div>
+
+        <div class="at-field">
+          <label class="at-label--muted at-label">Logo</label>
+          <div class="at-upload">
+            <i class="fa-regular fa-circle-dot" style="color:var(--dc-text-muted);"></i>
+            <span>Suelta los archivos aquí o </span>
+            <label for="{{ form.gd_logo.id_for_label }}" style="color:var(--dc-accent);cursor:pointer;text-decoration:underline;margin:0;">busca</label>
+            <input id="{{ form.gd_logo.id_for_label }}" name="gd_logo" type="file" accept="image/*" style="display:none;" />
+          </div>
+          {% if form.gd_logo.errors %}<div class="at-invalid">{{ form.gd_logo.errors|striptags }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Descripcion (full width textarea) -->
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.gd_descripcion.id_for_label }}">Descripcion</label>
+        <textarea
+          class="at-textarea"
+          id="{{ form.gd_descripcion.id_for_label }}"
+          name="gd_descripcion"
+          rows="3"
+        >{{ form.gd_descripcion.value|default_if_none:'' }}</textarea>
+        {% if form.gd_descripcion.errors %}<div class="at-invalid">{{ form.gd_descripcion.errors|striptags }}</div>{% endif %}
+      </div>
+
+      <!-- Direccion | Ciudad | Código Postal -->
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_direccion.id_for_label }}">Direccion</label>
+          <input class="at-input" id="{{ form.gd_direccion.id_for_label }}" name="gd_direccion" type="text" value="{{ form.gd_direccion.value|default_if_none:'' }}" />
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_ciudad.id_for_label }}">Ciudad</label>
+          <input class="at-input" id="{{ form.gd_ciudad.id_for_label }}" name="gd_ciudad" type="text" value="{{ form.gd_ciudad.value|default_if_none:'' }}" />
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_codigo_postal.id_for_label }}">Código Postal</label>
+          <input class="at-input" id="{{ form.gd_codigo_postal.id_for_label }}" name="gd_codigo_postal" type="text" value="{{ form.gd_codigo_postal.value|default_if_none:'' }}" />
+        </div>
+      </div>
+
+      <!-- Provincia | Comunidad Autónoma | País -->
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_provincia.id_for_label }}">Provincia</label>
+          <input class="at-input" id="{{ form.gd_provincia.id_for_label }}" name="gd_provincia" type="text" value="{{ form.gd_provincia.value|default_if_none:'' }}" />
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_comunidad_autonoma.id_for_label }}">Comunidad Autónoma</label>
+          <input class="at-input" id="{{ form.gd_comunidad_autonoma.id_for_label }}" name="gd_comunidad_autonoma" type="text" value="{{ form.gd_comunidad_autonoma.value|default_if_none:'' }}" />
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_pais.id_for_label }}">País</label>
+          <input class="at-input" id="{{ form.gd_pais.id_for_label }}" name="gd_pais" type="text" value="{{ form.gd_pais.value|default_if_none:'' }}" />
+        </div>
+      </div>
+
+      <!-- Website | LinkedIn -->
+      <div class="at-grid-2">
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_website.id_for_label }}">Website</label>
+          <input class="at-input" id="{{ form.gd_website.id_for_label }}" name="gd_website" type="url" value="{{ form.gd_website.value|default_if_none:'' }}" />
+          {% if form.gd_website.errors %}<div class="at-invalid">{{ form.gd_website.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_linkedin.id_for_label }}">Linked In</label>
+          <input class="at-input" id="{{ form.gd_linkedin.id_for_label }}" name="gd_linkedin" type="url" value="{{ form.gd_linkedin.value|default_if_none:'' }}" />
+          {% if form.gd_linkedin.errors %}<div class="at-invalid">{{ form.gd_linkedin.errors|striptags }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Director General | Email | Phone -->
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_ceo.id_for_label }}">Director General</label>
+          <input class="at-input" id="{{ form.gd_ceo.id_for_label }}" name="gd_ceo" type="text" value="{{ form.gd_ceo.value|default_if_none:'' }}" />
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_email_ceo.id_for_label }}">Email Director General</label>
+          <input class="at-input" id="{{ form.gd_email_ceo.id_for_label }}" name="gd_email_ceo" type="email" value="{{ form.gd_email_ceo.value|default_if_none:'' }}" />
+          {% if form.gd_email_ceo.errors %}<div class="at-invalid">{{ form.gd_email_ceo.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_phone_ceo.id_for_label }}">Phone Director General</label>
+          <input class="at-input" id="{{ form.gd_phone_ceo.id_for_label }}" name="gd_phone_ceo" type="text" value="{{ form.gd_phone_ceo.value|default_if_none:'' }}" />
+        </div>
+      </div>
+
+      <!-- Contacto 2 -->
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_persona_contacto_2.id_for_label }}">Persona de contacto 2</label>
+          <input class="at-input" id="{{ form.gd_persona_contacto_2.id_for_label }}" name="gd_persona_contacto_2" type="text" value="{{ form.gd_persona_contacto_2.value|default_if_none:'' }}" />
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_email_2.id_for_label }}">Email Persona de contacto 2</label>
+          <input class="at-input" id="{{ form.gd_email_2.id_for_label }}" name="gd_email_2" type="email" value="{{ form.gd_email_2.value|default_if_none:'' }}" />
+          {% if form.gd_email_2.errors %}<div class="at-invalid">{{ form.gd_email_2.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_phone_2.id_for_label }}">Phone Persona de contacto 2</label>
+          <input class="at-input" id="{{ form.gd_phone_2.id_for_label }}" name="gd_phone_2" type="text" value="{{ form.gd_phone_2.value|default_if_none:'' }}" />
+        </div>
+      </div>
+
+      <!-- Contacto 3 -->
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_persona_contacto_3.id_for_label }}">Persona de contacto 3</label>
+          <input class="at-input" id="{{ form.gd_persona_contacto_3.id_for_label }}" name="gd_persona_contacto_3" type="text" value="{{ form.gd_persona_contacto_3.value|default_if_none:'' }}" />
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_email_3.id_for_label }}">Email Persona de contacto 3</label>
+          <input class="at-input" id="{{ form.gd_email_3.id_for_label }}" name="gd_email_3" type="email" value="{{ form.gd_email_3.value|default_if_none:'' }}" />
+          {% if form.gd_email_3.errors %}<div class="at-invalid">{{ form.gd_email_3.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label--muted at-label" for="{{ form.gd_phone_3.id_for_label }}">Phone Persona de contacto 3</label>
+          <input class="at-input" id="{{ form.gd_phone_3.id_for_label }}" name="gd_phone_3" type="text" value="{{ form.gd_phone_3.value|default_if_none:'' }}" />
+        </div>
+      </div>
+
+      <!-- Organismo Público (full width) -->
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.gd_opi.id_for_label }}">Organismo Público de Investigación de procedencia</label>
+        <input class="at-input" id="{{ form.gd_opi.id_for_label }}" name="gd_opi" type="text" value="{{ form.gd_opi.value|default_if_none:'' }}" />
+      </div>
+
+      <!-- Composición Órgano Administración (full width) -->
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.gd_organo_admon.id_for_label }}">Composición del Órgano de Administración</label>
+        <input class="at-input" id="{{ form.gd_organo_admon.id_for_label }}" name="gd_organo_admon" type="text" value="{{ form.gd_organo_admon.value|default_if_none:'' }}" />
+      </div>
+
+      <!-- Fondo Invertido -->
+      <div class="at-field">
+        <label class="at-label" for="{{ form.gd_fondo.id_for_label }}">Fondo Invertido</label>
+        <select class="at-select" id="{{ form.gd_fondo.id_for_label }}" name="gd_fondo">
+          <option value=""></option>
+          {% for fondo in form.gd_fondo.field.queryset %}
+            <option value="{{ fondo.pk }}" {% if form.gd_fondo.value|stringformat:"s" == fondo.pk|stringformat:"s" %}selected{% endif %}>{{ fondo.nombre }}</option>
+          {% endfor %}
+        </select>
+        {% if form.gd_fondo.errors %}<div class="at-invalid">{{ form.gd_fondo.errors|striptags }}</div>{% endif %}
+      </div>
+
+      <!-- Miembro de la gestora -->
+      <div class="at-field">
+        <label class="at-label" for="{{ form.gd_fondo_miembro_equipo.id_for_label }}">Miembro de la gestora encargado de la inversión</label>
+        <select class="at-select" id="{{ form.gd_fondo_miembro_equipo.id_for_label }}" name="gd_fondo_miembro_equipo">
+          <option value=""></option>
+          {% for miembro in form.gd_fondo_miembro_equipo.field.queryset %}
+            <option value="{{ miembro.pk }}" {% if form.gd_fondo_miembro_equipo.value|stringformat:"s" == miembro.pk|stringformat:"s" %}selected{% endif %}>{{ miembro.nombre }}</option>
+          {% endfor %}
+        </select>
+        {% if form.gd_fondo_miembro_equipo.errors %}<div class="at-invalid">{{ form.gd_fondo_miembro_equipo.errors|striptags }}</div>{% endif %}
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SECCIÓN 2: Strategy Clasification
+    ══════════════════════════════════════════════════ -->
+    <div class="at-section">
+      <h2 class="at-section-title">Strategy Clasification</h2>
+
+      <!-- Estadio (full width) -->
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.cd_estadio.id_for_label }}">Estadio de la compañía</label>
+        <select class="at-select" id="{{ form.cd_estadio.id_for_label }}" name="cd_estadio">
+          <option value=""></option>
+          {% for estadio in form.cd_estadio.field.queryset %}
+            <option value="{{ estadio.pk }}" {% if form.cd_estadio.value|stringformat:"s" == estadio.pk|stringformat:"s" %}selected{% endif %}>{{ estadio.nombre }}</option>
+          {% endfor %}
+        </select>
+        {% if form.cd_estadio.errors %}<div class="at-invalid">{{ form.cd_estadio.errors|striptags }}</div>{% endif %}
+      </div>
+
+      <!-- Clasificacion Vertical (full width) -->
+      <div class="at-field">
+        <label class="at-label" for="{{ form.cd_vertical_clasification.id_for_label }}">Clasificacion Vertical</label>
+        <select class="at-select" id="{{ form.cd_vertical_clasification.id_for_label }}" name="cd_vertical_clasification">
+          <option value=""></option>
+          {% for vertical in form.cd_vertical_clasification.field.queryset %}
+            <option value="{{ vertical.pk }}" {% if form.cd_vertical_clasification.value|stringformat:"s" == vertical.pk|stringformat:"s" %}selected{% endif %}>{{ vertical.nombre }}</option>
+          {% endfor %}
+        </select>
+        {% if form.cd_vertical_clasification.errors %}<div class="at-invalid">{{ form.cd_vertical_clasification.errors|striptags }}</div>{% endif %}
+      </div>
+
+      <!-- Technological Sector | SubSector -->
+      <div class="at-grid-2">
+        <div class="at-field">
+          <label class="at-label" for="{{ form.cd_tech_sector.id_for_label }}">Technological Sector</label>
+          <select class="at-select" id="{{ form.cd_tech_sector.id_for_label }}" name="cd_tech_sector">
+            <option value=""></option>
+            {% for sector in form.cd_tech_sector.field.queryset %}
+              <option value="{{ sector.pk }}" {% if form.cd_tech_sector.value|stringformat:"s" == sector.pk|stringformat:"s" %}selected{% endif %}>{{ sector.nombre }}</option>
+            {% endfor %}
+          </select>
+          {% if form.cd_tech_sector.errors %}<div class="at-invalid">{{ form.cd_tech_sector.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.cd_tech_subsector.id_for_label }}">Technological SubSector</label>
+          <select class="at-select" id="{{ form.cd_tech_subsector.id_for_label }}" name="cd_tech_subsector">
+            <option value=""></option>
+            {% for subsector in form.cd_tech_subsector.field.queryset %}
+              <option value="{{ subsector.pk }}" {% if form.cd_tech_subsector.value|stringformat:"s" == subsector.pk|stringformat:"s" %}selected{% endif %}>{{ subsector.nombre }}</option>
+            {% endfor %}
+          </select>
+          {% if form.cd_tech_subsector.errors %}<div class="at-invalid">{{ form.cd_tech_subsector.errors|striptags }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Industrial | Environmental -->
+      <div class="at-grid-2">
+        <div class="at-field">
+          <label class="at-label" for="{{ form.cd_industrial_sector.id_for_label }}">Industrial Sector</label>
+          <select class="at-select" id="{{ form.cd_industrial_sector.id_for_label }}" name="cd_industrial_sector">
+            <option value=""></option>
+            {% for sector in form.cd_industrial_sector.field.queryset %}
+              <option value="{{ sector.pk }}" {% if form.cd_industrial_sector.value|stringformat:"s" == sector.pk|stringformat:"s" %}selected{% endif %}>{{ sector.nombre }}</option>
+            {% endfor %}
+          </select>
+          {% if form.cd_industrial_sector.errors %}<div class="at-invalid">{{ form.cd_industrial_sector.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.cd_industrial_subsector.id_for_label }}">Industrial Subsector</label>
+          <select class="at-select" id="{{ form.cd_industrial_subsector.id_for_label }}" name="cd_industrial_subsector">
+            <option value=""></option>
+            {% for subsector in form.cd_industrial_subsector.field.queryset %}
+              <option value="{{ subsector.pk }}" {% if form.cd_industrial_subsector.value|stringformat:"s" == subsector.pk|stringformat:"s" %}selected{% endif %}>{{ subsector.nombre }}</option>
+            {% endfor %}
+          </select>
+          {% if form.cd_industrial_subsector.errors %}<div class="at-invalid">{{ form.cd_industrial_subsector.errors|striptags }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SECCIÓN 3: Strategy Definition
+    ══════════════════════════════════════════════════ -->
+    <div class="at-section">
+      <h2 class="at-section-title">Strategy Definition</h2>
+
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.sd_valor_diferencial_tecnologico.id_for_label }}">Valor Diferencial Tecnológico</label>
+        <textarea class="at-textarea" id="{{ form.sd_valor_diferencial_tecnologico.id_for_label }}" name="sd_valor_diferencial_tecnologico" rows="3">{{ form.sd_valor_diferencial_tecnologico.value|default_if_none:'' }}</textarea>
+      </div>
+
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.sd_valor_diferencial_mercado.id_for_label }}">Valor Diferencial Mercado</label>
+        <p class="at-hint">Problema o Pain que resuelve</p>
+        <textarea class="at-textarea" id="{{ form.sd_valor_diferencial_mercado.id_for_label }}" name="sd_valor_diferencial_mercado" rows="3">{{ form.sd_valor_diferencial_mercado.value|default_if_none:'' }}</textarea>
+      </div>
+
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.sd_propuesta_de_valor.id_for_label }}">Propuesta de Valor Cliente</label>
+        <textarea class="at-textarea" id="{{ form.sd_propuesta_de_valor.id_for_label }}" name="sd_propuesta_de_valor" rows="3">{{ form.sd_propuesta_de_valor.value|default_if_none:'' }}</textarea>
+      </div>
+
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.sd_business_model.id_for_label }}">Modelo de Negocio</label>
+        <textarea class="at-textarea" id="{{ form.sd_business_model.id_for_label }}" name="sd_business_model" rows="3">{{ form.sd_business_model.value|default_if_none:'' }}</textarea>
+      </div>
+
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.sd_clientes.id_for_label }}">Clientes</label>
+        <textarea class="at-textarea" id="{{ form.sd_clientes.id_for_label }}" name="sd_clientes" rows="3">{{ form.sd_clientes.value|default_if_none:'' }}</textarea>
+      </div>
+
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.sd_competidores.id_for_label }}">Competidores</label>
+        <textarea class="at-textarea" id="{{ form.sd_competidores.id_for_label }}" name="sd_competidores" rows="3">{{ form.sd_competidores.value|default_if_none:'' }}</textarea>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SECCIÓN 4: Market Definition
+    ══════════════════════════════════════════════════ -->
+    <div class="at-section">
+      <h2 class="at-section-title">Market Definition</h2>
+
+      <!-- Tabla de referencia TAM / SAM / SOM -->
+      <div class="at-market-table-wrap">
+        <table class="at-market-table">
+          <thead>
+            <tr>
+              <th>Aspecto</th>
+              <th>TAM (Mercado Total)</th>
+              <th>SAM (Mercado Disponible)</th>
+              <th>SOM (Mercado Objetivo)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Definición</td>
+              <td class="tam">Universo completo de ingresos potenciales sin restricciones</td>
+              <td class="sam">Porción del TAM alcanzable con tu modelo de negocio actual</td>
+              <td class="som">Cuota realista que puedes capturar a corto-mediano plazo</td>
+            </tr>
+            <tr>
+              <td>Alcance típico</td>
+              <td class="tam">100 % del mercado</td>
+              <td class="sam">20-40 % del TAM</td>
+              <td class="som">1-5 % del SAM (primeros años)</td>
+            </tr>
+            <tr>
+              <td>Limitaciones consideradas</td>
+              <td class="tam">Ninguna</td>
+              <td class="sam">Geográficas, regulatorias, operativas, de producto</td>
+              <td class="som">Competencia, recursos, capacidad de ejecución, reconocimiento de marca</td>
+            </tr>
+            <tr>
+              <td>Propósito principal</td>
+              <td class="tam">Evaluar tamaño total de oportunidad de mercado</td>
+              <td class="sam">Determinar mercado atacable realistamente</td>
+              <td class="som">Establecer objetivos de ventas alcanzables</td>
+            </tr>
+            <tr>
+              <td>Horizonte temporal</td>
+              <td class="tam">5-10 años (visión a largo plazo)</td>
+              <td class="sam">3-5 años (expansión estratégica)</td>
+              <td class="som">1-3 años (crecimiento inmediato)</td>
+            </tr>
+            <tr>
+              <td>Audiencia principal</td>
+              <td class="tam">Inversores institucionales, fondos de VC</td>
+              <td class="sam">Equipo ejecutivo, planificación estratégica</td>
+              <td class="som">Equipos de ventas y marketing, operaciones</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TAM -->
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.mkt_tam_descripcion.id_for_label }}">TAM Description</label>
+        <p class="at-hint">Descripción del Mercado Total Disponible (Total Addressable Market): Corresponde al mercado total para los productos.</p>
+        <p class="at-hint--accent">Representa el universo completo de ingresos potenciales disponibles para tu producto o servicio, sin restricciones de competencia, geografía o capacidad operativa.</p>
+        <textarea class="at-textarea" id="{{ form.mkt_tam_descripcion.id_for_label }}" name="mkt_tam_descripcion" rows="3">{{ form.mkt_tam_descripcion.value|default_if_none:'' }}</textarea>
+      </div>
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_tam_volume.id_for_label }}">TAM Mercado (Units)</label>
+          <p class="at-hint">Valor de TAM en unidades (especificar unidades en texto)</p>
+          <input class="at-input" id="{{ form.mkt_tam_volume.id_for_label }}" name="mkt_tam_volume" type="text" value="{{ form.mkt_tam_volume.value|default_if_none:'' }}" />
+          {% if form.mkt_tam_volume.errors %}<div class="at-invalid">{{ form.mkt_tam_volume.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_tam_value.id_for_label }}">TAM Value (M€)</label>
+          <p class="at-hint">Valor de TAM en Millones de euros</p>
+          <input class="at-input" id="{{ form.mkt_tam_value.id_for_label }}" name="mkt_tam_value" type="text" value="{{ form.mkt_tam_value.value|default_if_none:'' }}" />
+          {% if form.mkt_tam_value.errors %}<div class="at-invalid">{{ form.mkt_tam_value.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_tam_cagr.id_for_label }}">TAM CAGR (%)</label>
+          <p class="at-hint">Tasa Crecimiento Anual Compuesto en varios años</p>
+          <input class="at-input" id="{{ form.mkt_tam_cagr.id_for_label }}" name="mkt_tam_cagr" type="text" value="{{ form.mkt_tam_cagr.value|default_if_none:'' }}" />
+          {% if form.mkt_tam_cagr.errors %}<div class="at-invalid">{{ form.mkt_tam_cagr.errors|striptags }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- SAM -->
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.mkt_sam_descripcion.id_for_label }}">SAM Description</label>
+        <p class="at-hint">Descripción del Mercado Accesible (Serviceable Available Market). Porción del mercado que se puede adquirir en función del modelo de negocio específico (objetivos)</p>
+        <p class="at-hint--accent">Es la porción realista del TAM que tu empresa puede alcanzar considerando las limitaciones de tu modelo de negocio actual, ubicación geográfica, segmentación de clientes y capacidades operativas.</p>
+        <textarea class="at-textarea" id="{{ form.mkt_sam_descripcion.id_for_label }}" name="mkt_sam_descripcion" rows="3">{{ form.mkt_sam_descripcion.value|default_if_none:'' }}</textarea>
+      </div>
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_sam_volume.id_for_label }}">SAM Mercado (Units)</label>
+          <p class="at-hint">Valor de SAM en unidades (especificar unidades en texto)</p>
+          <input class="at-input" id="{{ form.mkt_sam_volume.id_for_label }}" name="mkt_sam_volume" type="text" value="{{ form.mkt_sam_volume.value|default_if_none:'' }}" />
+          {% if form.mkt_sam_volume.errors %}<div class="at-invalid">{{ form.mkt_sam_volume.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_sam_value.id_for_label }}">SAM Value (M€)</label>
+          <p class="at-hint">Valor de SAM en Millones de euros</p>
+          <input class="at-input" id="{{ form.mkt_sam_value.id_for_label }}" name="mkt_sam_value" type="text" value="{{ form.mkt_sam_value.value|default_if_none:'' }}" />
+          {% if form.mkt_sam_value.errors %}<div class="at-invalid">{{ form.mkt_sam_value.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_sam_cagr.id_for_label }}">SAM CAGR (%)</label>
+          <p class="at-hint">Tasa Crecimiento Anual Compuesto en varios años</p>
+          <input class="at-input" id="{{ form.mkt_sam_cagr.id_for_label }}" name="mkt_sam_cagr" type="text" value="{{ form.mkt_sam_cagr.value|default_if_none:'' }}" />
+          {% if form.mkt_sam_cagr.errors %}<div class="at-invalid">{{ form.mkt_sam_cagr.errors|striptags }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- SOM -->
+      <div class="at-field">
+        <label class="at-label--muted at-label" for="{{ form.mkt_som_descripcion.id_for_label }}">SOM Description</label>
+        <p class="at-hint">Descripción del Mercado Específico (Serviceable Obtainable Market). Porción de personas que realmente puedes captar (SOM).</p>
+        <p class="at-hint--accent">Es la cuota realista que puedes capturar a corto y mediano plazo, considerando la competencia existente, tus recursos disponibles, estrategia de penetración y capacidad de ejecución.</p>
+        <textarea class="at-textarea" id="{{ form.mkt_som_descripcion.id_for_label }}" name="mkt_som_descripcion" rows="3">{{ form.mkt_som_descripcion.value|default_if_none:'' }}</textarea>
+      </div>
+      <div class="at-grid-3">
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_som_volume.id_for_label }}">SOM Mercado (Units)</label>
+          <p class="at-hint">Valor de SOM en unidades (especificar unidades en texto)</p>
+          <input class="at-input" id="{{ form.mkt_som_volume.id_for_label }}" name="mkt_som_volume" type="text" value="{{ form.mkt_som_volume.value|default_if_none:'' }}" />
+          {% if form.mkt_som_volume.errors %}<div class="at-invalid">{{ form.mkt_som_volume.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_som_value.id_for_label }}">SOM Value (M€)</label>
+          <p class="at-hint">Valor de SOM en Millones de euros</p>
+          <input class="at-input" id="{{ form.mkt_som_value.id_for_label }}" name="mkt_som_value" type="text" value="{{ form.mkt_som_value.value|default_if_none:'' }}" />
+          {% if form.mkt_som_value.errors %}<div class="at-invalid">{{ form.mkt_som_value.errors|striptags }}</div>{% endif %}
+        </div>
+        <div class="at-field">
+          <label class="at-label" for="{{ form.mkt_som_cagr.id_for_label }}">SOM CAGR (%)</label>
+          <p class="at-hint">Tasa Crecimiento Anual Compuesto en varios años</p>
+          <input class="at-input" id="{{ form.mkt_som_cagr.id_for_label }}" name="mkt_som_cagr" type="text" value="{{ form.mkt_som_cagr.value|default_if_none:'' }}" />
+          {% if form.mkt_som_cagr.errors %}<div class="at-invalid">{{ form.mkt_som_cagr.errors|striptags }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         SECCIÓN 5: Exit Strategy
+    ══════════════════════════════════════════════════ -->
+    <div class="at-section">
+      <h2 class="at-section-title">Exit Strategy</h2>
+
+      <div class="at-field">
+        <label class="at-label" for="{{ form.exit_value.id_for_label }}">Posible Valor de compañía en salida (M€)</label>
+        <input class="at-input" id="{{ form.exit_value.id_for_label }}" name="exit_value" type="text" value="{{ form.exit_value.value|default_if_none:'' }}" style="max-width:360px;" />
+        {% if form.exit_value.errors %}<div class="at-invalid">{{ form.exit_value.errors|striptags }}</div>{% endif %}
+      </div>
+
+      <div class="at-field">
+        <label class="at-label" for="{{ form.exit_descripcion.id_for_label }}">Descripción de la estrategia de venta de la compañía</label>
+        <textarea class="at-textarea" id="{{ form.exit_descripcion.id_for_label }}" name="exit_descripcion" rows="3">{{ form.exit_descripcion.value|default_if_none:'' }}</textarea>
+      </div>
+
+      <div class="at-field">
+        <label class="at-label" for="{{ form.exit_empresas_comparables.id_for_label }}">Empresas similares (Comparables)</label>
+        <textarea class="at-textarea" id="{{ form.exit_empresas_comparables.id_for_label }}" name="exit_empresas_comparables" rows="3">{{ form.exit_empresas_comparables.value|default_if_none:'' }}</textarea>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="at-actions">
+      <button class="btn-accent" type="submit">
+        <i class="fa-solid fa-floppy-disk"></i> Guardar empresa
+      </button>
+      <a class="btn-ghost" href="{% url 'companies' %}">Cancelar</a>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

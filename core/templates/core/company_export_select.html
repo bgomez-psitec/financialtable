@@ -1,0 +1,129 @@
+{% extends "core/base.html" %}
+
+{% block title %}Exportar CSV{% endblock %}
+
+{% block content %}
+  <div class="dc-page-header">
+    <h1 class="dc-page-title">Exportar CSV</h1>
+    <div class="dc-page-actions">
+      <a class="btn-ghost" href="{% url 'companies' %}">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+
+  <div class="dc-card">
+    <div class="dc-card__header">
+      <span class="dc-card__title">Selecciona campos y orden de exportación</span>
+    </div>
+    <div class="dc-card__body">
+
+      {% if not selected_ids %}
+        <div class="dc-alert dc-alert--warning">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>No se han seleccionado empresas para exportar.</span>
+        </div>
+      {% else %}
+        <form method="post" action="{% url 'company_export_csv' %}" id="export-fields-form">
+          {% csrf_token %}
+          <input type="hidden" name="company_ids" value="{{ selected_ids }}" />
+
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+            <button type="button" class="btn-ghost" id="select-all-fields">
+              <i class="fa-solid fa-check-double"></i> Seleccionar todo
+            </button>
+            <button type="button" class="btn-ghost" id="clear-all-fields">
+              <i class="fa-solid fa-xmark"></i> Limpiar selección
+            </button>
+          </div>
+
+          <div class="dc-table-wrap">
+            <table class="dc-table dc-export-table table">
+              <thead>
+                <tr>
+                  <th style="width:50px;">Sel.</th>
+                  <th>Campo</th>
+                  <th style="width:120px;">Orden</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for field in export_fields %}
+                  <tr>
+                    <td class="text-center">
+                      <input
+                        type="checkbox"
+                        class="field-select"
+                        name="fields"
+                        value="{{ field.name }}"
+                        id="field-{{ field.name }}"
+                      />
+                    </td>
+                    <td>
+                      <label for="field-{{ field.name }}" class="mb-0" style="font-weight:400;cursor:pointer;">
+                        {{ field.label }}
+                      </label>
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        class="form-control-sm field-order"
+                        name="order_{{ field.name }}"
+                        min="1"
+                        step="1"
+                        placeholder="#"
+                        data-field="{{ field.name }}"
+                      />
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:18px;">
+            <button type="submit" class="btn-accent">
+              <i class="fa-solid fa-file-export"></i> Exportar CSV
+            </button>
+            <a href="{% url 'companies' %}" class="btn-ghost">Cancelar</a>
+          </div>
+        </form>
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script>
+    $(function () {
+      function nextOrderValue() {
+        var maxValue = 0;
+        $('.field-order').each(function () {
+          var value = parseInt($(this).val(), 10);
+          if (!isNaN(value) && value > maxValue) maxValue = value;
+        });
+        return maxValue + 1;
+      }
+
+      $('.field-select').on('change', function () {
+        var orderInput = $(this).closest('tr').find('.field-order');
+        if ($(this).is(':checked')) {
+          if (!orderInput.val()) orderInput.val(nextOrderValue());
+        } else {
+          orderInput.val('');
+        }
+      });
+
+      $('#select-all-fields').on('click', function () {
+        $('.field-select').each(function () {
+          if (!$(this).is(':checked')) $(this).prop('checked', true).trigger('change');
+        });
+      });
+
+      $('#clear-all-fields').on('click', function () {
+        $('.field-select').prop('checked', false);
+        $('.field-order').val('');
+      });
+    });
+  </script>
+{% endblock %}
