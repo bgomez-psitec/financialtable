@@ -8,3 +8,6 @@ env/
 .django_runserver.pid
 staticfiles/
 media/
+config/local_settings.py
+logs/
+*.log
