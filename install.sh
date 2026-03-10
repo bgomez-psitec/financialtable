@@ -268,7 +268,7 @@ $PYTHON manage.py migrate --no-input
 ok "Migraciones aplicadas"
 
 step "Recopilando archivos estáticos..."
-$PYTHON manage.py collectstatic --no-input --quiet
+$PYTHON manage.py collectstatic --no-input -v 0
 ok "Archivos estáticos en ${INSTALL_DIR}/staticfiles/"
 
 # ── 8. Configuración de Gunicorn ──────────────────────────────────────────────
