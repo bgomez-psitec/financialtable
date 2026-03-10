@@ -188,13 +188,8 @@ step "Generando configuración local..."
 cat > "${INSTALL_DIR}/config/local_settings.py" << PYEOF
 # =============================================================================
 #  Configuración local — generada por install.sh el $(date)
-#  NO subir este archivo a git (añadir a .gitignore)
+#  NO subir este archivo a git (está en .gitignore)
 # =============================================================================
-import os
-from pathlib import Path
-
-# BASE_DIR apunta a la raíz del proyecto (igual que en settings.py)
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False
 
@@ -217,7 +212,9 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Rutas absolutas — no depende de BASE_DIR
+STATIC_ROOT = '${INSTALL_DIR}/staticfiles'
+MEDIA_ROOT  = '${INSTALL_DIR}/media'
 
 LOGGING = {
     'version': 1,
