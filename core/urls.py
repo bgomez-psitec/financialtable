@@ -22,5 +22,9 @@ urlpatterns = [
     path("sectors/<int:sector_id>/delete/", views.sector_delete, name="sector_delete"),
     path("tablas/", views.reference_tables, name="reference_tables"),
     path("config/smtp/", views.smtp_config, name="smtp_config"),
+    path("auth/password-reset/", views.password_reset_request, name="password_reset"),
+    path("auth/password-reset/done/", views.password_reset_done, name="password_reset_done"),
+    path("auth/password-reset/confirm/<uidb64>/<token>/", views.password_reset_confirm, name="password_reset_confirm"),
+    path("auth/password-reset/complete/", views.password_reset_complete, name="password_reset_complete"),
     path("logout/", views.logout_view, name="logout"),
 ]

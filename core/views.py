@@ -1,4 +1,7 @@
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from decimal import Decimal, InvalidOperation
@@ -1107,3 +1110,102 @@ def reference_tables(request):
         "core/reference_tables.html",
         {"tables": tables, "active_page": "reference_tables"},
     )
+
+
+# ── Recuperación de contraseña ────────────────────────────────────────────────
+
+def password_reset_request(request):
+    """Paso 1: el usuario introduce su email para recibir el enlace de reset."""
+    smtp = _get_smtp()
+    has_smtp = bool(smtp and smtp.host)
+    error = None
+
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        if not email:
+            error = "Introduce tu dirección de email."
+        elif not has_smtp:
+            error = "El sistema de email no está configurado. Contacta con el administrador."
+        else:
+            # Buscar usuarios activos con ese email (puede haber más de uno)
+            matched = User.objects.filter(email__iexact=email, is_active=True)
+            for user in matched:
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                reset_url = request.build_absolute_uri(
+                    reverse("password_reset_confirm", args=[uid, token])
+                )
+                display = user.get_full_name() or user.username
+                try:
+                    from django.core.mail import EmailMessage
+                    msg = EmailMessage(
+                        subject="Recuperación de contraseña – DataContaBL",
+                        body=(
+                            f"Hola {display},\n\n"
+                            f"Has solicitado restablecer tu contraseña en DataContaBL.\n\n"
+                            f"Haz clic en el siguiente enlace para crear una nueva contraseña:\n"
+                            f"{reset_url}\n\n"
+                            f"Este enlace es válido durante 24 horas. Si no has solicitado "
+                            f"este cambio, ignora este mensaje.\n\n"
+                            f"El equipo de DataContaBL"
+                        ),
+                        from_email=_smtp_from_addr(smtp),
+                        to=[user.email],
+                        connection=_build_smtp_backend(smtp),
+                    )
+                    msg.send()
+                except Exception:
+                    pass  # No revelar errores para evitar enumeración de emails
+            # Siempre redirigir a "done" (no revelar si el email existe o no)
+            return HttpResponseRedirect(reverse("password_reset_done"))
+
+    return render(request, "core/password_reset.html", {
+        "has_smtp": has_smtp,
+        "error": error,
+    })
+
+
+def password_reset_done(request):
+    """Paso 2: confirmación de que el email fue enviado."""
+    return render(request, "core/password_reset_done.html")
+
+
+def password_reset_confirm(request, uidb64, token):
+    """Paso 3: formulario para introducir la nueva contraseña."""
+    error = None
+    validlink = False
+    user = None
+
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        validlink = True
+        if request.method == "POST":
+            password1 = request.POST.get("new_password1", "")
+            password2 = request.POST.get("new_password2", "")
+            if not password1:
+                error = "La contraseña no puede estar vacía."
+            elif password1 != password2:
+                error = "Las contraseñas no coinciden."
+            elif len(password1) < 8:
+                error = "La contraseña debe tener al menos 8 caracteres."
+            else:
+                user.set_password(password1)
+                user.save()
+                return HttpResponseRedirect(reverse("password_reset_complete"))
+
+    return render(request, "core/password_reset_confirm.html", {
+        "validlink": validlink,
+        "error": error,
+        "uidb64": uidb64,
+        "token": token,
+    })
+
+
+def password_reset_complete(request):
+    """Paso 4: contraseña cambiada con éxito."""
+    return render(request, "core/password_reset_complete.html")
