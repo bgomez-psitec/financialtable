@@ -139,3 +139,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/companies/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Local overrides (production: DEBUG, SECRET_KEY, DATABASES, ALLOWED_HOSTS, etc.)
+try:
+    from .local_settings import *  # noqa: F401,F403
+except ImportError:
+    pass
