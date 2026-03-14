@@ -15,6 +15,12 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Application version (read from VERSION file at project root)
+try:
+    APP_VERSION = (BASE_DIR / "VERSION").read_text().strip()
+except Exception:
+    APP_VERSION = "?"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
