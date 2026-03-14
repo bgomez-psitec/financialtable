@@ -243,12 +243,13 @@ def logout_view(request):
 @user_passes_test(lambda u: u.is_staff, login_url="companies")
 def users(request):
     all_users = User.objects.order_by("username")
-    invited = request.GET.get("invited") == "1"
-    created = request.GET.get("created") == "1"
+    invited   = request.GET.get("invited")   == "1"
+    created   = request.GET.get("created")   == "1"
+    reinvited = request.GET.get("reinvited") == "1"
     return render(
         request,
         "core/users.html",
-        {"users": all_users, "active_page": "users", "invited": invited, "created": created},
+        {"users": all_users, "active_page": "users", "invited": invited, "created": created, "reinvited": reinvited},
     )
 
 
@@ -286,9 +287,12 @@ def user_invite(request, user_id):
     if request.method == "POST":
         action = request.POST.get("action", "send")
 
+        from_creation = "invite_password" in request.session
+
         if action == "skip":
             request.session.pop("invite_password", None)
-            return HttpResponseRedirect(reverse("users") + "?created=1")
+            suffix = "?created=1" if from_creation else ""
+            return HttpResponseRedirect(reverse("users") + suffix)
 
         # action == "send"
         recipient   = (request.POST.get("to_email") or "").strip()
@@ -312,7 +316,8 @@ def user_invite(request, user_id):
                 )
                 msg.send()
                 request.session.pop("invite_password", None)
-                return HttpResponseRedirect(reverse("users") + "?invited=1")
+                suffix = "?invited=1" if from_creation else "?reinvited=1"
+                return HttpResponseRedirect(reverse("users") + suffix)
             except Exception as exc:
                 send_error = f"Error al enviar: {exc}"
 

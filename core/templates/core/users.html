@@ -13,6 +13,11 @@
       <i class="fa-solid fa-circle-check"></i>
       <span>Usuario creado correctamente.</span>
     </div>
+  {% elif reinvited %}
+    <div class="dc-alert dc-alert--success" style="margin-bottom:20px;">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Invitación enviada correctamente.</span>
+    </div>
   {% endif %}
 
   <div class="dc-page-header">
@@ -56,6 +61,15 @@
                 <a class="btn-ghost" href="{% url 'user_edit' user.id %}">
                   <i class="fa-solid fa-pen-to-square"></i> Editar
                 </a>
+                {% if user.email %}
+                  <a class="btn-ghost" href="{% url 'user_invite' user.id %}" title="Enviar invitación por email">
+                    <i class="fa-solid fa-envelope-open-text" style="color:var(--dc-accent);"></i>
+                  </a>
+                {% else %}
+                  <span class="btn-ghost" style="opacity:.35;cursor:default;" title="El usuario no tiene email">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                  </span>
+                {% endif %}
                 <a class="btn-danger-ghost" href="{% url 'user_delete' user.id %}">
                   <i class="fa-solid fa-trash"></i>
                 </a>
