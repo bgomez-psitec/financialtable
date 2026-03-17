@@ -1220,8 +1220,16 @@ def _kpi_year_range():
 
 
 @login_required
+def _allowed_companies(user):
+    """Devuelve el queryset de empresas accesibles para el usuario."""
+    if user.is_staff:
+        return CompanyInvestment.objects.all()
+    return CompanyInvestment.objects.filter(user_links__user=user)
+
+
 def kpis(request):
-    qs = KPIEmpresa.objects.select_related("sociedad").all()
+    allowed = _allowed_companies(request.user)
+    qs = KPIEmpresa.objects.select_related("sociedad").filter(sociedad__in=allowed)
     # Filtros opcionales via GET
     sociedad_id = request.GET.get("sociedad", "")
     anio = request.GET.get("anio", "")
@@ -1233,10 +1241,9 @@ def kpis(request):
     if trimestre:
         qs = qs.filter(trimestre=trimestre)
 
-    companies = CompanyInvestment.objects.all()
     return render(request, "core/kpis.html", {
         "kpis": qs,
-        "companies": companies,
+        "companies": allowed,
         "years": _kpi_year_range(),
         "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
         "filter_sociedad": sociedad_id,
@@ -1248,7 +1255,7 @@ def kpis(request):
 
 @login_required
 def kpi_create(request):
-    companies = CompanyInvestment.objects.all()
+    allowed = _allowed_companies(request.user)
     years = _kpi_year_range()
     error = None
 
@@ -1263,7 +1270,7 @@ def kpi_create(request):
             error = "Trimestre no válido."
         else:
             try:
-                sociedad = CompanyInvestment.objects.get(pk=sociedad_id)
+                sociedad = allowed.get(pk=sociedad_id)
                 KPIEmpresa.objects.create(sociedad=sociedad, anio=int(anio), trimestre=trimestre)
                 return HttpResponseRedirect(reverse("kpis"))
             except CompanyInvestment.DoesNotExist:
@@ -1272,7 +1279,7 @@ def kpi_create(request):
                 error = "Ya existe un KPI para esa empresa, año y trimestre."
 
     return render(request, "core/kpi_form.html", {
-        "companies": companies,
+        "companies": allowed,
         "years": years,
         "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
         "error": error,
@@ -1283,8 +1290,8 @@ def kpi_create(request):
 
 @login_required
 def kpi_edit(request, kpi_id):
-    kpi = get_object_or_404(KPIEmpresa, pk=kpi_id)
-    companies = CompanyInvestment.objects.all()
+    allowed = _allowed_companies(request.user)
+    kpi = get_object_or_404(KPIEmpresa, pk=kpi_id, sociedad__in=allowed)
     years = _kpi_year_range()
     error = None
 
@@ -1299,7 +1306,7 @@ def kpi_edit(request, kpi_id):
             error = "Trimestre no válido."
         else:
             try:
-                kpi.sociedad = CompanyInvestment.objects.get(pk=sociedad_id)
+                kpi.sociedad = allowed.get(pk=sociedad_id)
                 kpi.anio = int(anio)
                 kpi.trimestre = trimestre
                 kpi.save()
@@ -1311,7 +1318,7 @@ def kpi_edit(request, kpi_id):
 
     return render(request, "core/kpi_form.html", {
         "kpi": kpi,
-        "companies": companies,
+        "companies": allowed,
         "years": years,
         "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
         "error": error,
@@ -1322,7 +1329,8 @@ def kpi_edit(request, kpi_id):
 
 @login_required
 def kpi_delete(request, kpi_id):
-    kpi = get_object_or_404(KPIEmpresa, pk=kpi_id)
+    allowed = _allowed_companies(request.user)
+    kpi = get_object_or_404(KPIEmpresa, pk=kpi_id, sociedad__in=allowed)
     if request.method == "POST":
         kpi.delete()
         return HttpResponseRedirect(reverse("kpis"))
