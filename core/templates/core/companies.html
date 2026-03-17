@@ -79,6 +79,9 @@
               <td>{{ company.gd_email_ceo|default:"" }}</td>
               <td>{{ company.gd_phone_ceo|default:"" }}</td>
               <td class="actions-cell">
+                <a class="btn-ghost" href="{% url 'company_detail' company.id %}" title="Ver detalle">
+                  <i class="fa-solid fa-eye"></i>
+                </a>
                 <a class="btn-ghost" href="{% url 'company_edit' company.id %}">
                   <i class="fa-solid fa-pen-to-square"></i> Editar
                 </a>

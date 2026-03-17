@@ -514,6 +514,22 @@ def company_create(request):
 
 
 @login_required(login_url=settings.LOGIN_URL)
+def company_detail(request, company_id):
+    if request.user.is_staff:
+        company = get_object_or_404(CompanyInvestment, pk=company_id)
+    else:
+        company = get_object_or_404(
+            CompanyInvestment,
+            pk=company_id,
+            user_links__user=request.user,
+        )
+    return render(request, "core/company_detail.html", {
+        "company": company,
+        "active_page": "companies",
+    })
+
+
+@login_required(login_url=settings.LOGIN_URL)
 def company_edit(request, company_id):
     if request.user.is_staff:
         company = get_object_or_404(CompanyInvestment, pk=company_id)

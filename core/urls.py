@@ -15,6 +15,7 @@ urlpatterns = [
     path("companies/export/", views.company_export_select, name="company_export_select"),
     path("companies/export/csv/", views.company_export_csv, name="company_export_csv"),
     path("companies/new/", views.company_create, name="company_create"),
+    path("companies/<int:company_id>/", views.company_detail, name="company_detail"),
     path("companies/<int:company_id>/invite/", views.company_invite, name="company_invite"),
     path("companies/<int:company_id>/edit/", views.company_edit, name="company_edit"),
     path("companies/<int:company_id>/delete/", views.company_delete, name="company_delete"),
