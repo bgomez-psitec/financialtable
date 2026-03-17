@@ -124,74 +124,66 @@
         <span style="font-size:11px;font-weight:700;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.06em;">Hitos de desarrollo</span>
       </div>
 
-      {% with sn_sel="form-control" %}
-      <div style="display:grid;grid-template-columns:1fr 80px;gap:0 16px;align-items:center;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
 
-        <div style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;padding:6px 0 6px;border-bottom:1px solid var(--dc-border);">Hito</div>
-        <div style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;padding:6px 0 6px;border-bottom:1px solid var(--dc-border);text-align:center;">S/N</div>
+        {% with sel_style="width:100%;text-align:center;padding:5px 6px;" %}
 
-        <!-- 1 -->
-        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Prueba de laboratorio validada</div>
-        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
-          <select name="prueba_laboratorio_validada" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+        <div style="background:var(--dc-bg-alt,#f8fafc);border:1px solid var(--dc-border);border-radius:8px;padding:12px;">
+          <div style="font-size:12px;color:var(--dc-text-muted);margin-bottom:8px;line-height:1.3;">Prueba de laboratorio validada</div>
+          <select name="prueba_laboratorio_validada" class="form-control" style="{{ sel_style }}">
             <option value="">—</option>
             <option value="S" {% if kpi.prueba_laboratorio_validada == "S" %}selected{% endif %}>S</option>
             <option value="N" {% if kpi.prueba_laboratorio_validada == "N" %}selected{% endif %}>N</option>
           </select>
         </div>
 
-        <!-- 2 -->
-        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Pilot Plant terminada</div>
-        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
-          <select name="pilot_plant_terminada" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+        <div style="background:var(--dc-bg-alt,#f8fafc);border:1px solid var(--dc-border);border-radius:8px;padding:12px;">
+          <div style="font-size:12px;color:var(--dc-text-muted);margin-bottom:8px;line-height:1.3;">Pilot Plant terminada</div>
+          <select name="pilot_plant_terminada" class="form-control" style="{{ sel_style }}">
             <option value="">—</option>
             <option value="S" {% if kpi.pilot_plant_terminada == "S" %}selected{% endif %}>S</option>
             <option value="N" {% if kpi.pilot_plant_terminada == "N" %}selected{% endif %}>N</option>
           </select>
         </div>
 
-        <!-- 3 -->
-        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Producto de Pilot Plant / MVP validado por cliente</div>
-        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
-          <select name="producto_pilot_plant_validado" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+        <div style="background:var(--dc-bg-alt,#f8fafc);border:1px solid var(--dc-border);border-radius:8px;padding:12px;">
+          <div style="font-size:12px;color:var(--dc-text-muted);margin-bottom:8px;line-height:1.3;">Producto de Pilot Plant / MVP validado por cliente</div>
+          <select name="producto_pilot_plant_validado" class="form-control" style="{{ sel_style }}">
             <option value="">—</option>
             <option value="S" {% if kpi.producto_pilot_plant_validado == "S" %}selected{% endif %}>S</option>
             <option value="N" {% if kpi.producto_pilot_plant_validado == "N" %}selected{% endif %}>N</option>
           </select>
         </div>
 
-        <!-- 4 -->
-        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Flagship Plant terminada</div>
-        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
-          <select name="flagship_plant_terminada" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+        <div style="background:var(--dc-bg-alt,#f8fafc);border:1px solid var(--dc-border);border-radius:8px;padding:12px;">
+          <div style="font-size:12px;color:var(--dc-text-muted);margin-bottom:8px;line-height:1.3;">Flagship Plant terminada</div>
+          <select name="flagship_plant_terminada" class="form-control" style="{{ sel_style }}">
             <option value="">—</option>
             <option value="S" {% if kpi.flagship_plant_terminada == "S" %}selected{% endif %}>S</option>
             <option value="N" {% if kpi.flagship_plant_terminada == "N" %}selected{% endif %}>N</option>
           </select>
         </div>
 
-        <!-- 5 -->
-        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Producto de Flagship validado por cliente</div>
-        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
-          <select name="producto_flagship_validado" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+        <div style="background:var(--dc-bg-alt,#f8fafc);border:1px solid var(--dc-border);border-radius:8px;padding:12px;">
+          <div style="font-size:12px;color:var(--dc-text-muted);margin-bottom:8px;line-height:1.3;">Producto de Flagship validado por cliente</div>
+          <select name="producto_flagship_validado" class="form-control" style="{{ sel_style }}">
             <option value="">—</option>
             <option value="S" {% if kpi.producto_flagship_validado == "S" %}selected{% endif %}>S</option>
             <option value="N" {% if kpi.producto_flagship_validado == "N" %}selected{% endif %}>N</option>
           </select>
         </div>
 
-        <!-- 6 -->
-        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;">Comercialización</div>
-        <div style="text-align:center;padding:6px 0;">
-          <select name="comercializacion" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+        <div style="background:var(--dc-bg-alt,#f8fafc);border:1px solid var(--dc-border);border-radius:8px;padding:12px;">
+          <div style="font-size:12px;color:var(--dc-text-muted);margin-bottom:8px;line-height:1.3;">Comercialización</div>
+          <select name="comercializacion" class="form-control" style="{{ sel_style }}">
             <option value="">—</option>
             <option value="S" {% if kpi.comercializacion == "S" %}selected{% endif %}>S</option>
             <option value="N" {% if kpi.comercializacion == "N" %}selected{% endif %}>N</option>
           </select>
         </div>
 
+        {% endwith %}
       </div>
-      {% endwith %}
 
       <!-- ── Indicadores de rendimiento (%) ── -->
       <div style="margin-bottom:10px;">
