@@ -286,6 +286,67 @@ body.sidebar-collapsed .dc-main    { margin-left: 0 !important; }
 .dc-card__body { padding: 20px; }
 .dc-card__body--flush { padding: 0; }
 
+/* --- DataTables controls dentro de dc-card ------------ */
+.dc-card .dataTables_wrapper .dataTables_length,
+.dc-card .dataTables_wrapper .dataTables_filter {
+  padding: 14px 16px 10px;
+  font-size: .82rem;
+  color: var(--dc-text-muted);
+}
+.dc-card .dataTables_wrapper .dataTables_filter input {
+  border: 1px solid var(--dc-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: .82rem;
+  outline: none;
+  color: var(--dc-text);
+  background: #fff;
+  margin-left: 6px;
+}
+.dc-card .dataTables_wrapper .dataTables_filter input:focus {
+  border-color: var(--dc-accent);
+  box-shadow: 0 0 0 2px rgba(16,185,129,.15);
+}
+.dc-card .dataTables_wrapper .dataTables_length select {
+  border: 1px solid var(--dc-border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: .82rem;
+  color: var(--dc-text);
+  background: #fff;
+  margin: 0 4px;
+  cursor: pointer;
+}
+.dc-card .dataTables_wrapper .dataTables_info,
+.dc-card .dataTables_wrapper .dataTables_paginate {
+  padding: 10px 16px 14px;
+  font-size: .82rem;
+  color: var(--dc-text-muted);
+  border-top: 1px solid var(--dc-border);
+}
+.dc-card .dataTables_wrapper .dataTables_paginate .paginate_button {
+  border-radius: 6px !important;
+  padding: 3px 10px !important;
+  font-size: .82rem;
+  border: 1px solid transparent !important;
+}
+.dc-card .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dc-card .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background: var(--dc-accent) !important;
+  border-color: var(--dc-accent) !important;
+  color: #fff !important;
+}
+.dc-card .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #f1f5f9 !important;
+  border-color: var(--dc-border) !important;
+  color: var(--dc-text) !important;
+}
+/* Separador entre controles superiores y tabla */
+.dc-card .dataTables_wrapper > .row:first-child {
+  border-bottom: 1px solid var(--dc-border);
+  margin: 0;
+}
+
 /* --- Tabla --------------------------------------------- */
 .dc-table-wrap { overflow-x: auto; }
 
