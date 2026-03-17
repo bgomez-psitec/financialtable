@@ -246,7 +246,10 @@ class KPIEmpresa(models.Model):
         ("Q3", "Q3"),
         ("Q4", "Q4"),
     ]
+    SN_CHOICES = [("S", "S"), ("N", "N")]
+    TRL_MRL_CHOICES = [(i, str(i)) for i in range(1, 10)]
 
+    # ── Identificación ──────────────────────────────────────────────────────
     sociedad = models.ForeignKey(
         CompanyInvestment,
         verbose_name="Sociedad",
@@ -255,6 +258,61 @@ class KPIEmpresa(models.Model):
     )
     anio = models.PositiveIntegerField("Año")
     trimestre = models.CharField("Trimestre", max_length=2, choices=TRIMESTRE_CHOICES)
+
+    # ── Datos generales del KPI ──────────────────────────────────────────────
+    nombre = models.CharField("Nombre", max_length=255, blank=True)
+    trl = models.PositiveSmallIntegerField(
+        "TRL", null=True, blank=True, choices=TRL_MRL_CHOICES
+    )
+    mrl = models.PositiveSmallIntegerField(
+        "MRL", null=True, blank=True, choices=TRL_MRL_CHOICES
+    )
+    estimated_breakeven_year = models.PositiveIntegerField(
+        "Estimated Breakeven Year", null=True, blank=True
+    )
+    estimated_time_to_market = models.PositiveIntegerField(
+        "Estimated Time to Market", null=True, blank=True
+    )
+
+    # ── Hitos (S/N) ─────────────────────────────────────────────────────────
+    prueba_laboratorio_validada = models.CharField(
+        "Prueba de laboratorio validada", max_length=1, choices=SN_CHOICES, blank=True
+    )
+    pilot_plant_terminada = models.CharField(
+        "Pilot Plant terminada", max_length=1, choices=SN_CHOICES, blank=True
+    )
+    producto_pilot_plant_validado = models.CharField(
+        "Producto de Pilot Plant / MVP validado por cliente",
+        max_length=1, choices=SN_CHOICES, blank=True,
+    )
+    flagship_plant_terminada = models.CharField(
+        "Flagship Plant terminada", max_length=1, choices=SN_CHOICES, blank=True
+    )
+    producto_flagship_validado = models.CharField(
+        "Producto de Flagship validado por cliente",
+        max_length=1, choices=SN_CHOICES, blank=True,
+    )
+    comercializacion = models.CharField(
+        "Comercialización", max_length=1, choices=SN_CHOICES, blank=True
+    )
+
+    # ── Indicadores de rendimiento (%) ──────────────────────────────────────
+    rendimiento_proceso = models.DecimalField(
+        "Rendimiento del proceso (% real vs estimado)",
+        max_digits=6, decimal_places=2, null=True, blank=True,
+    )
+    reproducibilidad_experimental = models.DecimalField(
+        "Reproducibilidad experimental (% de variabilidad entre ensayos)",
+        max_digits=6, decimal_places=2, null=True, blank=True,
+    )
+    coste_energetico = models.DecimalField(
+        "Coste energético (% real vs estimado)",
+        max_digits=6, decimal_places=2, null=True, blank=True,
+    )
+    coste_materias_primas = models.DecimalField(
+        "Coste de materias primas (% real vs estimado)",
+        max_digits=6, decimal_places=2, null=True, blank=True,
+    )
 
     class Meta:
         verbose_name = "KPI Empresa"

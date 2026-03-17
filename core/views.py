@@ -1289,7 +1289,26 @@ def kpi_create(request):
         else:
             try:
                 sociedad = allowed.get(pk=sociedad_id)
-                KPIEmpresa.objects.create(sociedad=sociedad, anio=int(anio), trimestre=trimestre)
+                KPIEmpresa.objects.create(
+                    sociedad=sociedad,
+                    anio=int(anio),
+                    trimestre=trimestre,
+                    nombre=request.POST.get("nombre", ""),
+                    trl=request.POST.get("trl") or None,
+                    mrl=request.POST.get("mrl") or None,
+                    estimated_breakeven_year=request.POST.get("estimated_breakeven_year") or None,
+                    estimated_time_to_market=request.POST.get("estimated_time_to_market") or None,
+                    prueba_laboratorio_validada=request.POST.get("prueba_laboratorio_validada", ""),
+                    pilot_plant_terminada=request.POST.get("pilot_plant_terminada", ""),
+                    producto_pilot_plant_validado=request.POST.get("producto_pilot_plant_validado", ""),
+                    flagship_plant_terminada=request.POST.get("flagship_plant_terminada", ""),
+                    producto_flagship_validado=request.POST.get("producto_flagship_validado", ""),
+                    comercializacion=request.POST.get("comercializacion", ""),
+                    rendimiento_proceso=request.POST.get("rendimiento_proceso") or None,
+                    reproducibilidad_experimental=request.POST.get("reproducibilidad_experimental") or None,
+                    coste_energetico=request.POST.get("coste_energetico") or None,
+                    coste_materias_primas=request.POST.get("coste_materias_primas") or None,
+                )
                 return HttpResponseRedirect(reverse("kpis"))
             except CompanyInvestment.DoesNotExist:
                 error = "Empresa no encontrada."
@@ -1300,6 +1319,8 @@ def kpi_create(request):
         "companies": allowed,
         "years": years,
         "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
+        "trl_mrl_range": range(1, 10),
+        "sn_choices": KPIEmpresa.SN_CHOICES,
         "error": error,
         "action": "Nuevo KPI",
         "active_page": "kpis",
@@ -1327,6 +1348,21 @@ def kpi_edit(request, kpi_id):
                 kpi.sociedad = allowed.get(pk=sociedad_id)
                 kpi.anio = int(anio)
                 kpi.trimestre = trimestre
+                kpi.nombre = request.POST.get("nombre", "")
+                kpi.trl = request.POST.get("trl") or None
+                kpi.mrl = request.POST.get("mrl") or None
+                kpi.estimated_breakeven_year = request.POST.get("estimated_breakeven_year") or None
+                kpi.estimated_time_to_market = request.POST.get("estimated_time_to_market") or None
+                kpi.prueba_laboratorio_validada = request.POST.get("prueba_laboratorio_validada", "")
+                kpi.pilot_plant_terminada = request.POST.get("pilot_plant_terminada", "")
+                kpi.producto_pilot_plant_validado = request.POST.get("producto_pilot_plant_validado", "")
+                kpi.flagship_plant_terminada = request.POST.get("flagship_plant_terminada", "")
+                kpi.producto_flagship_validado = request.POST.get("producto_flagship_validado", "")
+                kpi.comercializacion = request.POST.get("comercializacion", "")
+                kpi.rendimiento_proceso = request.POST.get("rendimiento_proceso") or None
+                kpi.reproducibilidad_experimental = request.POST.get("reproducibilidad_experimental") or None
+                kpi.coste_energetico = request.POST.get("coste_energetico") or None
+                kpi.coste_materias_primas = request.POST.get("coste_materias_primas") or None
                 kpi.save()
                 return HttpResponseRedirect(reverse("kpis"))
             except CompanyInvestment.DoesNotExist:
@@ -1339,6 +1375,8 @@ def kpi_edit(request, kpi_id):
         "companies": allowed,
         "years": years,
         "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
+        "trl_mrl_range": range(1, 10),
+        "sn_choices": KPIEmpresa.SN_CHOICES,
         "error": error,
         "action": "Editar KPI",
         "active_page": "kpis",

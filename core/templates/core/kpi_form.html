@@ -2,86 +2,253 @@
 {% block title %}{{ action }} — DataContaBL{% endblock %}
 
 {% block content %}
-<div class="dc-content-header">
-  <h1 class="dc-content-title">{{ action }}</h1>
+
+<!-- ── Cabecera ── -->
+<div class="dc-page-header">
+  <h1 class="dc-page-title">{{ action }}</h1>
 </div>
 
-<div class="dc-card" style="max-width:560px;">
-  <div class="dc-card-body">
-
-    {% if error %}
-      <div class="dc-alert dc-alert--danger" style="margin-bottom:18px;">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        <span>{{ error }}</span>
-      </div>
-    {% endif %}
-
-    <form method="post" class="dc-form" novalidate>
-      {% csrf_token %}
-
-      <div class="air-section">
-        <div class="air-section-body">
-
-          <div class="air-grid-1" style="gap:16px;">
-
-            <div>
-              <label class="form-label">Sociedad <span style="color:var(--dc-danger)">*</span></label>
-              <select name="sociedad" class="form-control" required>
-                <option value="">— Seleccionar empresa —</option>
-                {% for c in companies %}
-                  <option value="{{ c.pk }}"
-                    {% if kpi and kpi.sociedad_id == c.pk %}selected
-                    {% elif request.POST.sociedad == c.pk|stringformat:"s" %}selected
-                    {% endif %}>
-                    {{ c.gd_sociedad }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div>
-              <label class="form-label">Año <span style="color:var(--dc-danger)">*</span></label>
-              <select name="anio" class="form-control" required>
-                <option value="">— Seleccionar año —</option>
-                {% for y in years %}
-                  <option value="{{ y }}"
-                    {% if kpi and kpi.anio == y %}selected
-                    {% elif request.POST.anio == y|stringformat:"s" %}selected
-                    {% endif %}>
-                    {{ y }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div>
-              <label class="form-label">Trimestre <span style="color:var(--dc-danger)">*</span></label>
-              <select name="trimestre" class="form-control" required>
-                <option value="">— Seleccionar trimestre —</option>
-                {% for val, label in trimestres %}
-                  <option value="{{ val }}"
-                    {% if kpi and kpi.trimestre == val %}selected
-                    {% elif request.POST.trimestre == val %}selected
-                    {% endif %}>
-                    {{ label }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px;margin-top:20px;">
-        <button type="submit" class="btn-accent">
-          <i class="fa-solid fa-floppy-disk"></i> Guardar
-        </button>
-        <a href="{% url 'kpis' %}" class="btn-ghost">Cancelar</a>
-      </div>
-
-    </form>
+{% if error %}
+  <div class="dc-alert dc-alert--danger" style="margin-bottom:18px;">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    <span>{{ error }}</span>
   </div>
-</div>
+{% endif %}
+
+<form method="post" class="dc-form" novalidate>
+{% csrf_token %}
+
+  <!-- ── Sección 1: Identificación ── -->
+  <div class="air-section" style="margin-bottom:20px;">
+    <div class="air-section-header">
+      <span>Identificación</span>
+    </div>
+    <div class="air-section-body">
+      <div class="air-grid-3" style="gap:16px;">
+
+        <div>
+          <label class="form-label">Sociedad <span style="color:var(--dc-danger)">*</span></label>
+          <select name="sociedad" class="form-control" required>
+            <option value="">— Seleccionar empresa —</option>
+            {% for c in companies %}
+              <option value="{{ c.pk }}"
+                {% if kpi and kpi.sociedad_id == c.pk %}selected{% endif %}>
+                {{ c.gd_sociedad }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label">Año <span style="color:var(--dc-danger)">*</span></label>
+          <select name="anio" class="form-control" required>
+            <option value="">— Seleccionar año —</option>
+            {% for y in years %}
+              <option value="{{ y }}"
+                {% if kpi and kpi.anio == y %}selected{% endif %}>
+                {{ y }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label">Trimestre <span style="color:var(--dc-danger)">*</span></label>
+          <select name="trimestre" class="form-control" required>
+            <option value="">— Seleccionar trimestre —</option>
+            {% for val, label in trimestres %}
+              <option value="{{ val }}"
+                {% if kpi and kpi.trimestre == val %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Sección 2: Datos del KPI ── -->
+  <div class="air-section" style="margin-bottom:20px;">
+    <div class="air-section-header">
+      <span>Datos del KPI</span>
+    </div>
+    <div class="air-section-body">
+
+      <!-- Nombre -->
+      <div style="margin-bottom:16px;">
+        <label class="form-label">Nombre</label>
+        <input type="text" name="nombre" class="form-control" value="{{ kpi.nombre }}">
+      </div>
+
+      <!-- TRL / MRL / Breakeven / Time to market -->
+      <div class="air-grid-2" style="gap:16px;margin-bottom:24px;">
+
+        <div>
+          <label class="form-label">TRL <span style="color:var(--dc-text-muted);font-weight:400;font-size:11px;">(1–9)</span></label>
+          <select name="trl" class="form-control">
+            <option value="">—</option>
+            {% for i in trl_mrl_range %}
+              <option value="{{ i }}" {% if kpi and kpi.trl == i %}selected{% endif %}>{{ i }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label">MRL <span style="color:var(--dc-text-muted);font-weight:400;font-size:11px;">(1–9)</span></label>
+          <select name="mrl" class="form-control">
+            <option value="">—</option>
+            {% for i in trl_mrl_range %}
+              <option value="{{ i }}" {% if kpi and kpi.mrl == i %}selected{% endif %}>{{ i }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label">Estimated Breakeven Year</label>
+          <input type="number" name="estimated_breakeven_year" class="form-control" min="2000" max="2100"
+                 value="{{ kpi.estimated_breakeven_year }}">
+        </div>
+
+        <div>
+          <label class="form-label">Estimated Time to Market</label>
+          <input type="number" name="estimated_time_to_market" class="form-control" min="0"
+                 value="{{ kpi.estimated_time_to_market }}">
+        </div>
+
+      </div>
+
+      <!-- ── Hitos de desarrollo (S/N) ── -->
+      <div style="margin-bottom:10px;">
+        <span style="font-size:11px;font-weight:700;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.06em;">Hitos de desarrollo</span>
+      </div>
+
+      {% with sn_sel="form-control" %}
+      <div style="display:grid;grid-template-columns:1fr 80px;gap:0 16px;align-items:center;margin-bottom:24px;">
+
+        <div style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;padding:6px 0 6px;border-bottom:1px solid var(--dc-border);">Hito</div>
+        <div style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;padding:6px 0 6px;border-bottom:1px solid var(--dc-border);text-align:center;">S/N</div>
+
+        <!-- 1 -->
+        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Prueba de laboratorio validada</div>
+        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
+          <select name="prueba_laboratorio_validada" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+            <option value="">—</option>
+            <option value="S" {% if kpi.prueba_laboratorio_validada == "S" %}selected{% endif %}>S</option>
+            <option value="N" {% if kpi.prueba_laboratorio_validada == "N" %}selected{% endif %}>N</option>
+          </select>
+        </div>
+
+        <!-- 2 -->
+        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Pilot Plant terminada</div>
+        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
+          <select name="pilot_plant_terminada" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+            <option value="">—</option>
+            <option value="S" {% if kpi.pilot_plant_terminada == "S" %}selected{% endif %}>S</option>
+            <option value="N" {% if kpi.pilot_plant_terminada == "N" %}selected{% endif %}>N</option>
+          </select>
+        </div>
+
+        <!-- 3 -->
+        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Producto de Pilot Plant / MVP validado por cliente</div>
+        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
+          <select name="producto_pilot_plant_validado" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+            <option value="">—</option>
+            <option value="S" {% if kpi.producto_pilot_plant_validado == "S" %}selected{% endif %}>S</option>
+            <option value="N" {% if kpi.producto_pilot_plant_validado == "N" %}selected{% endif %}>N</option>
+          </select>
+        </div>
+
+        <!-- 4 -->
+        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Flagship Plant terminada</div>
+        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
+          <select name="flagship_plant_terminada" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+            <option value="">—</option>
+            <option value="S" {% if kpi.flagship_plant_terminada == "S" %}selected{% endif %}>S</option>
+            <option value="N" {% if kpi.flagship_plant_terminada == "N" %}selected{% endif %}>N</option>
+          </select>
+        </div>
+
+        <!-- 5 -->
+        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;border-bottom:1px solid var(--dc-border);">Producto de Flagship validado por cliente</div>
+        <div style="text-align:center;padding:6px 0;border-bottom:1px solid var(--dc-border);">
+          <select name="producto_flagship_validado" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+            <option value="">—</option>
+            <option value="S" {% if kpi.producto_flagship_validado == "S" %}selected{% endif %}>S</option>
+            <option value="N" {% if kpi.producto_flagship_validado == "N" %}selected{% endif %}>N</option>
+          </select>
+        </div>
+
+        <!-- 6 -->
+        <div style="font-size:13px;color:var(--dc-text);padding:8px 0;">Comercialización</div>
+        <div style="text-align:center;padding:6px 0;">
+          <select name="comercializacion" class="form-control" style="width:72px;display:inline-block;text-align:center;padding:4px 6px;">
+            <option value="">—</option>
+            <option value="S" {% if kpi.comercializacion == "S" %}selected{% endif %}>S</option>
+            <option value="N" {% if kpi.comercializacion == "N" %}selected{% endif %}>N</option>
+          </select>
+        </div>
+
+      </div>
+      {% endwith %}
+
+      <!-- ── Indicadores de rendimiento (%) ── -->
+      <div style="margin-bottom:10px;">
+        <span style="font-size:11px;font-weight:700;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.06em;">Indicadores de rendimiento (%)</span>
+      </div>
+
+      <div class="air-grid-2" style="gap:16px;">
+
+        <div>
+          <label class="form-label">Rendimiento del proceso (% real vs estimado)</label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" name="rendimiento_proceso" class="form-control" step="0.01" min="0" max="9999"
+                   value="{{ kpi.rendimiento_proceso }}">
+            <span style="color:var(--dc-text-muted);font-size:14px;flex-shrink:0;">%</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Reproducibilidad experimental (% variabilidad entre ensayos)</label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" name="reproducibilidad_experimental" class="form-control" step="0.01" min="0" max="9999"
+                   value="{{ kpi.reproducibilidad_experimental }}">
+            <span style="color:var(--dc-text-muted);font-size:14px;flex-shrink:0;">%</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Coste energético (% real vs estimado)</label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" name="coste_energetico" class="form-control" step="0.01" min="0" max="9999"
+                   value="{{ kpi.coste_energetico }}">
+            <span style="color:var(--dc-text-muted);font-size:14px;flex-shrink:0;">%</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Coste de materias primas (% real vs estimado)</label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" name="coste_materias_primas" class="form-control" step="0.01" min="0" max="9999"
+                   value="{{ kpi.coste_materias_primas }}">
+            <span style="color:var(--dc-text-muted);font-size:14px;flex-shrink:0;">%</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div style="display:flex;gap:10px;margin-top:8px;margin-bottom:32px;">
+    <button type="submit" class="btn-accent">
+      <i class="fa-solid fa-floppy-disk"></i> Guardar
+    </button>
+    <a href="{% url 'kpis' %}" class="btn-ghost">Cancelar</a>
+  </div>
+
+</form>
+
 {% endblock %}
