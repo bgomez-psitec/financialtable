@@ -523,8 +523,10 @@ def company_detail(request, company_id):
             pk=company_id,
             user_links__user=request.user,
         )
+    kpis = company.kpis.order_by("-anio", "trimestre")
     return render(request, "core/company_detail.html", {
         "company": company,
+        "kpis": kpis,
         "active_page": "companies",
     })
 

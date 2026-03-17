@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<!-- ── Cabecera de página ─────────────────────────────── -->
+<!-- ── Cabecera ──────────────────────────────────────────── -->
 <div class="dc-page-header">
   <div style="display:flex;align-items:center;gap:16px;">
     {% if company.gd_logo %}
@@ -38,363 +38,308 @@
   </div>
 </div>
 
-<!-- ── SECCIÓN 1: Datos Generales ────────────────────── -->
-<div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card__header">
-    <h2 class="dc-card__title"><i class="fa-solid fa-building-columns" style="color:var(--dc-accent);margin-right:6px;"></i>Datos Generales</h2>
+<!-- ── Tabs nav ──────────────────────────────────────────── -->
+<div class="dc-tabs">
+  <button class="dc-tab active" data-tab="general">
+    <i class="fa-solid fa-building-columns"></i> General
+  </button>
+  <button class="dc-tab" data-tab="kpis">
+    <i class="fa-solid fa-chart-line"></i> KPIs
+    {% if kpis %}<span class="dc-tab-badge">{{ kpis|length }}</span>{% endif %}
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB: GENERAL
+══════════════════════════════════════════════════════════ -->
+<div class="dc-tab-panel" id="tab-general">
+
+  <!-- Datos Generales -->
+  <div class="dc-card" style="margin-bottom:20px;">
+    <div class="dc-card__header">
+      <h2 class="dc-card__title"><i class="fa-solid fa-circle-info" style="color:var(--dc-accent);margin-right:6px;"></i>Datos Generales</h2>
+    </div>
+    <div class="dc-card__body">
+      {% if company.gd_descripcion %}
+        <p style="font-size:14px;color:var(--dc-text);line-height:1.65;margin:0 0 20px;padding-bottom:20px;border-bottom:1px solid var(--dc-border);">{{ company.gd_descripcion }}</p>
+      {% endif %}
+      <div class="at-grid-3" style="margin-bottom:16px;">
+        <div class="detail-block"><div class="detail-label">Fecha de constitución</div><div class="detail-value">{{ company.gd_fecha_constitucion|default:"—" }}</div></div>
+        <div class="detail-block"><div class="detail-label">Dirección</div><div class="detail-value">{{ company.gd_direccion|default:"—" }}</div></div>
+        <div class="detail-block"><div class="detail-label">Código Postal</div><div class="detail-value">{{ company.gd_codigo_postal|default:"—" }}</div></div>
+      </div>
+      <div class="at-grid-3" style="margin-bottom:16px;">
+        <div class="detail-block"><div class="detail-label">Ciudad</div><div class="detail-value">{{ company.gd_ciudad|default:"—" }}</div></div>
+        <div class="detail-block"><div class="detail-label">Provincia</div><div class="detail-value">{{ company.gd_provincia|default:"—" }}</div></div>
+        <div class="detail-block"><div class="detail-label">Comunidad Autónoma</div><div class="detail-value">{{ company.gd_comunidad_autonoma|default:"—" }}</div></div>
+      </div>
+      <div class="at-grid-2" style="margin-bottom:16px;">
+        <div class="detail-block">
+          <div class="detail-label"><i class="fa-solid fa-globe fa-xs"></i> Website</div>
+          <div class="detail-value">{% if company.gd_website %}<a href="{{ company.gd_website }}" target="_blank" rel="noopener" style="color:var(--dc-accent);word-break:break-all;">{{ company.gd_website }}</a>{% else %}—{% endif %}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label"><i class="fa-brands fa-linkedin fa-xs"></i> LinkedIn</div>
+          <div class="detail-value">{% if company.gd_linkedin %}<a href="{{ company.gd_linkedin }}" target="_blank" rel="noopener" style="color:var(--dc-accent);word-break:break-all;">{{ company.gd_linkedin }}</a>{% else %}—{% endif %}</div>
+        </div>
+      </div>
+
+      <!-- Contactos -->
+      <div style="border-top:1px solid var(--dc-border);padding-top:16px;margin-bottom:16px;">
+        <div class="detail-section-label">Contactos</div>
+        {% if company.gd_ceo or company.gd_email_ceo %}
+        <div class="at-grid-3" style="margin-bottom:12px;">
+          <div class="detail-block"><div class="detail-label">Director General</div><div class="detail-value">{{ company.gd_ceo|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Email CEO</div><div class="detail-value">{% if company.gd_email_ceo %}<a href="mailto:{{ company.gd_email_ceo }}" style="color:var(--dc-accent);">{{ company.gd_email_ceo }}</a>{% else %}—{% endif %}</div></div>
+          <div class="detail-block"><div class="detail-label">Teléfono CEO</div><div class="detail-value">{{ company.gd_phone_ceo|default:"—" }}</div></div>
+        </div>
+        {% endif %}
+        {% if company.gd_persona_contacto_2 or company.gd_email_2 %}
+        <div class="at-grid-3" style="margin-bottom:12px;">
+          <div class="detail-block"><div class="detail-label">Contacto 2</div><div class="detail-value">{{ company.gd_persona_contacto_2|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Email</div><div class="detail-value">{{ company.gd_email_2|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Teléfono</div><div class="detail-value">{{ company.gd_phone_2|default:"—" }}</div></div>
+        </div>
+        {% endif %}
+        {% if company.gd_persona_contacto_3 or company.gd_email_3 %}
+        <div class="at-grid-3">
+          <div class="detail-block"><div class="detail-label">Contacto 3</div><div class="detail-value">{{ company.gd_persona_contacto_3|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Email</div><div class="detail-value">{{ company.gd_email_3|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Teléfono</div><div class="detail-value">{{ company.gd_phone_3|default:"—" }}</div></div>
+        </div>
+        {% endif %}
+        {% if not company.gd_ceo and not company.gd_persona_contacto_2 and not company.gd_persona_contacto_3 %}
+          <span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin contactos registrados</span>
+        {% endif %}
+      </div>
+
+      <!-- Fondo -->
+      <div style="border-top:1px solid var(--dc-border);padding-top:16px;">
+        <div class="detail-section-label">Fondo</div>
+        <div class="at-grid-3" style="margin-bottom:12px;">
+          <div class="detail-block"><div class="detail-label">Fondo Invertido</div><div class="detail-value">{{ company.gd_fondo|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Miembro gestor</div><div class="detail-value">{{ company.gd_fondo_miembro_equipo|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Código interno</div><div class="detail-value">{{ company.gd_internal_code|default:"—" }}</div></div>
+        </div>
+        {% if company.gd_opi or company.gd_organo_admon %}
+        <div class="at-grid-2">
+          <div class="detail-block"><div class="detail-label">OPI</div><div class="detail-value">{{ company.gd_opi|default:"—" }}</div></div>
+          <div class="detail-block"><div class="detail-label">Órgano de Administración</div><div class="detail-value">{{ company.gd_organo_admon|default:"—" }}</div></div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
-  <div class="dc-card__body">
 
-    {% if company.gd_descripcion %}
-      <p style="font-size:14px;color:var(--dc-text);line-height:1.65;margin:0 0 20px;padding-bottom:20px;border-bottom:1px solid var(--dc-border);">{{ company.gd_descripcion }}</p>
-    {% endif %}
-
-    <!-- Datos clave -->
-    <div class="at-grid-3" style="margin-bottom:20px;">
-      <div class="detail-block">
-        <div class="detail-label">Fecha de constitución</div>
-        <div class="detail-value">{{ company.gd_fecha_constitucion|default:"—" }}</div>
+  <!-- Strategy Classification -->
+  <div class="dc-card" style="margin-bottom:20px;">
+    <div class="dc-card__header">
+      <h2 class="dc-card__title"><i class="fa-solid fa-sitemap" style="color:var(--dc-accent);margin-right:6px;"></i>Strategy Classification</h2>
+    </div>
+    <div class="dc-card__body">
+      <div class="at-grid-2" style="margin-bottom:16px;">
+        <div class="detail-block"><div class="detail-label">Estadio</div><div class="detail-value">{{ company.cd_estadio|default:"—" }}</div></div>
+        <div class="detail-block"><div class="detail-label">Clasificación Vertical</div><div class="detail-value">{{ company.cd_vertical_clasification|default:"—" }}</div></div>
       </div>
-      <div class="detail-block">
-        <div class="detail-label">Código Postal</div>
-        <div class="detail-value">{{ company.gd_codigo_postal|default:"—" }}</div>
+      <div class="at-grid-2" style="margin-bottom:16px;">
+        <div class="detail-block"><div class="detail-label">Tech Sector</div><div class="detail-value">{{ company.cd_tech_sector|default:"—" }}</div></div>
+        <div class="detail-block"><div class="detail-label">Tech SubSector</div><div class="detail-value">{{ company.cd_tech_subsector|default:"—" }}</div></div>
       </div>
-      <div class="detail-block">
-        <div class="detail-label">Dirección</div>
-        <div class="detail-value">{{ company.gd_direccion|default:"—" }}</div>
+      <div class="at-grid-2">
+        <div class="detail-block"><div class="detail-label">Industrial Sector</div><div class="detail-value">{{ company.cd_industrial_sector|default:"—" }}</div></div>
+        <div class="detail-block"><div class="detail-label">Industrial SubSector</div><div class="detail-value">{{ company.cd_industrial_subsector|default:"—" }}</div></div>
       </div>
     </div>
-    <div class="at-grid-3" style="margin-bottom:20px;">
-      <div class="detail-block">
-        <div class="detail-label">Ciudad</div>
-        <div class="detail-value">{{ company.gd_ciudad|default:"—" }}</div>
+  </div>
+
+  <!-- Strategy Definition -->
+  {% if company.sd_valor_diferencial_tecnologico or company.sd_valor_diferencial_mercado or company.sd_propuesta_de_valor or company.sd_business_model or company.sd_clientes or company.sd_competidores %}
+  <div class="dc-card" style="margin-bottom:20px;">
+    <div class="dc-card__header">
+      <h2 class="dc-card__title"><i class="fa-solid fa-chess" style="color:var(--dc-accent);margin-right:6px;"></i>Strategy Definition</h2>
+    </div>
+    <div class="dc-card__body" style="display:flex;flex-direction:column;gap:16px;">
+      {% if company.sd_valor_diferencial_tecnologico %}<div class="detail-text-block"><div class="detail-label">Valor Diferencial Tecnológico</div><div class="detail-text">{{ company.sd_valor_diferencial_tecnologico }}</div></div>{% endif %}
+      {% if company.sd_valor_diferencial_mercado %}<div class="detail-text-block"><div class="detail-label">Valor Diferencial Mercado</div><div class="detail-text">{{ company.sd_valor_diferencial_mercado }}</div></div>{% endif %}
+      {% if company.sd_propuesta_de_valor %}<div class="detail-text-block"><div class="detail-label">Propuesta de Valor</div><div class="detail-text">{{ company.sd_propuesta_de_valor }}</div></div>{% endif %}
+      {% if company.sd_business_model %}<div class="detail-text-block"><div class="detail-label">Modelo de Negocio</div><div class="detail-text">{{ company.sd_business_model }}</div></div>{% endif %}
+      {% if company.sd_clientes %}<div class="detail-text-block"><div class="detail-label">Clientes</div><div class="detail-text">{{ company.sd_clientes }}</div></div>{% endif %}
+      {% if company.sd_competidores %}<div class="detail-text-block"><div class="detail-label">Competidores</div><div class="detail-text">{{ company.sd_competidores }}</div></div>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Market Definition -->
+  {% if company.mkt_tam_descripcion or company.mkt_tam_value or company.mkt_sam_descripcion or company.mkt_sam_value or company.mkt_som_descripcion or company.mkt_som_value %}
+  <div class="dc-card" style="margin-bottom:20px;">
+    <div class="dc-card__header">
+      <h2 class="dc-card__title"><i class="fa-solid fa-chart-pie" style="color:var(--dc-accent);margin-right:6px;"></i>Market Definition</h2>
+    </div>
+    <div class="dc-card__body">
+      <div class="at-grid-3" style="margin-bottom:24px;">
+        <div style="background:var(--dc-bg);border:1px solid #bfdbfe;border-radius:10px;padding:16px;">
+          <div style="font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">TAM · Mercado Total</div>
+          {% if company.mkt_tam_value %}<div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_tam_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>{% endif %}
+          {% if company.mkt_tam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_tam_volume }} uds.</div>{% endif %}
+          {% if company.mkt_tam_cagr %}<div style="margin-top:8px;"><span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_tam_cagr }}%</span></div>{% endif %}
+          {% if not company.mkt_tam_value and not company.mkt_tam_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
+        </div>
+        <div style="background:var(--dc-bg);border:1px solid #a7f3d0;border-radius:10px;padding:16px;">
+          <div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">SAM · Mercado Disponible</div>
+          {% if company.mkt_sam_value %}<div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_sam_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>{% endif %}
+          {% if company.mkt_sam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_sam_volume }} uds.</div>{% endif %}
+          {% if company.mkt_sam_cagr %}<div style="margin-top:8px;"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_sam_cagr }}%</span></div>{% endif %}
+          {% if not company.mkt_sam_value and not company.mkt_sam_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
+        </div>
+        <div style="background:var(--dc-bg);border:1px solid #ddd6fe;border-radius:10px;padding:16px;">
+          <div style="font-size:10px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">SOM · Mercado Objetivo</div>
+          {% if company.mkt_som_value %}<div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_som_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>{% endif %}
+          {% if company.mkt_som_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_som_volume }} uds.</div>{% endif %}
+          {% if company.mkt_som_cagr %}<div style="margin-top:8px;"><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_som_cagr }}%</span></div>{% endif %}
+          {% if not company.mkt_som_value and not company.mkt_som_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
+        </div>
       </div>
-      <div class="detail-block">
-        <div class="detail-label">Provincia</div>
-        <div class="detail-value">{{ company.gd_provincia|default:"—" }}</div>
-      </div>
-      <div class="detail-block">
-        <div class="detail-label">Comunidad Autónoma</div>
-        <div class="detail-value">{{ company.gd_comunidad_autonoma|default:"—" }}</div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        {% if company.mkt_tam_descripcion %}<div class="detail-text-block"><div class="detail-label">Descripción TAM</div><div class="detail-text">{{ company.mkt_tam_descripcion }}</div></div>{% endif %}
+        {% if company.mkt_sam_descripcion %}<div class="detail-text-block"><div class="detail-label">Descripción SAM</div><div class="detail-text">{{ company.mkt_sam_descripcion }}</div></div>{% endif %}
+        {% if company.mkt_som_descripcion %}<div class="detail-text-block"><div class="detail-label">Descripción SOM</div><div class="detail-text">{{ company.mkt_som_descripcion }}</div></div>{% endif %}
       </div>
     </div>
+  </div>
+  {% endif %}
 
-    <!-- Web / LinkedIn -->
-    <div class="at-grid-2" style="margin-bottom:20px;">
-      <div class="detail-block">
-        <div class="detail-label"><i class="fa-solid fa-globe fa-xs"></i> Website</div>
-        <div class="detail-value">
-          {% if company.gd_website %}
-            <a href="{{ company.gd_website }}" target="_blank" rel="noopener"
-               style="color:var(--dc-accent);word-break:break-all;">
-              {{ company.gd_website }}
-            </a>
-          {% else %}—{% endif %}
+  <!-- Exit Strategy -->
+  {% if company.exit_value or company.exit_descripcion or company.exit_empresas_comparables %}
+  <div class="dc-card" style="margin-bottom:20px;">
+    <div class="dc-card__header">
+      <h2 class="dc-card__title"><i class="fa-solid fa-flag-checkered" style="color:var(--dc-accent);margin-right:6px;"></i>Exit Strategy</h2>
+    </div>
+    <div class="dc-card__body">
+      {% if company.exit_value %}
+        <div style="margin-bottom:20px;padding:16px;background:var(--dc-bg);border-radius:10px;border:1px solid var(--dc-border);display:inline-block;">
+          <div class="detail-label" style="margin-bottom:4px;">Valor estimado de salida</div>
+          <div style="font-size:28px;font-weight:700;color:var(--dc-accent);">{{ company.exit_value }} <span style="font-size:16px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
         </div>
-      </div>
-      <div class="detail-block">
-        <div class="detail-label"><i class="fa-brands fa-linkedin fa-xs"></i> LinkedIn</div>
-        <div class="detail-value">
-          {% if company.gd_linkedin %}
-            <a href="{{ company.gd_linkedin }}" target="_blank" rel="noopener"
-               style="color:var(--dc-accent);word-break:break-all;">
-              {{ company.gd_linkedin }}
-            </a>
-          {% else %}—{% endif %}
-        </div>
+      {% endif %}
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        {% if company.exit_descripcion %}<div class="detail-text-block"><div class="detail-label">Estrategia de venta</div><div class="detail-text">{{ company.exit_descripcion }}</div></div>{% endif %}
+        {% if company.exit_empresas_comparables %}<div class="detail-text-block"><div class="detail-label">Empresas comparables</div><div class="detail-text">{{ company.exit_empresas_comparables }}</div></div>{% endif %}
       </div>
     </div>
+  </div>
+  {% endif %}
 
-    <!-- Contactos -->
-    <div style="border-top:1px solid var(--dc-border);padding-top:16px;margin-bottom:20px;">
-      <div class="detail-section-label">Contactos</div>
-      {% if company.gd_ceo or company.gd_email_ceo or company.gd_phone_ceo %}
-      <div class="at-grid-3" style="margin-bottom:12px;">
-        <div class="detail-block">
-          <div class="detail-label">Director General</div>
-          <div class="detail-value">{{ company.gd_ceo|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Email CEO</div>
-          <div class="detail-value">
-            {% if company.gd_email_ceo %}<a href="mailto:{{ company.gd_email_ceo }}" style="color:var(--dc-accent);">{{ company.gd_email_ceo }}</a>{% else %}—{% endif %}
+</div><!-- /tab-general -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     TAB: KPIs
+══════════════════════════════════════════════════════════ -->
+<div class="dc-tab-panel" id="tab-kpis" style="display:none;">
+
+  <div class="dc-card">
+    <div class="dc-card__header" style="display:flex;align-items:center;justify-content:space-between;">
+      <h2 class="dc-card__title">
+        <i class="fa-solid fa-chart-line" style="color:var(--dc-accent);margin-right:6px;"></i>
+        KPIs registrados
+      </h2>
+      {% if request.user.is_staff %}
+        <a href="{% url 'kpi_create' %}?sociedad={{ company.pk }}" class="btn-accent" style="font-size:13px;">
+          <i class="fa-solid fa-plus"></i> Nuevo KPI
+        </a>
+      {% endif %}
+    </div>
+    <div class="dc-card__body">
+      {% if kpis %}
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {% for kpi in kpis %}
+          <div style="display:flex;align-items:center;justify-content:space-between;
+                      padding:14px 16px;background:var(--dc-bg);border:1px solid var(--dc-border);
+                      border-radius:8px;">
+            <div style="display:flex;align-items:center;gap:16px;">
+              <div style="text-align:center;min-width:48px;">
+                <div style="font-size:20px;font-weight:700;color:var(--dc-text);line-height:1;">{{ kpi.anio }}</div>
+                <div style="font-size:10px;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;">Año</div>
+              </div>
+              <div style="width:1px;height:36px;background:var(--dc-border);"></div>
+              <span style="display:inline-flex;align-items:center;justify-content:center;
+                           width:42px;height:42px;border-radius:8px;font-size:13px;font-weight:700;
+                           {% if kpi.trimestre == 'Q1' %}background:#dbeafe;color:#1d4ed8;
+                           {% elif kpi.trimestre == 'Q2' %}background:#d1fae5;color:#065f46;
+                           {% elif kpi.trimestre == 'Q3' %}background:#fef3c7;color:#92400e;
+                           {% else %}background:#ede9fe;color:#5b21b6;{% endif %}">
+                {{ kpi.trimestre }}
+              </span>
+              <div>
+                <div style="font-size:14px;font-weight:600;color:var(--dc-text);">{{ kpi.anio }} — {{ kpi.trimestre }}</div>
+                <div style="font-size:12px;color:var(--dc-text-muted);">{{ company.gd_sociedad }}</div>
+              </div>
+            </div>
+            {% if request.user.is_staff %}
+            <div style="display:flex;gap:8px;">
+              <a href="{% url 'kpi_edit' kpi.pk %}" class="btn-ghost" style="font-size:12px;padding:5px 10px;" title="Editar">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </a>
+              <a href="{% url 'kpi_delete' kpi.pk %}" class="btn-danger-ghost" style="font-size:12px;padding:5px 10px;" title="Eliminar">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </div>
+            {% endif %}
           </div>
+          {% endfor %}
         </div>
-        <div class="detail-block">
-          <div class="detail-label">Teléfono CEO</div>
-          <div class="detail-value">{{ company.gd_phone_ceo|default:"—" }}</div>
+      {% else %}
+        <div style="text-align:center;padding:48px 20px;">
+          <i class="fa-solid fa-chart-line" style="font-size:40px;color:var(--dc-border);margin-bottom:14px;display:block;"></i>
+          <p style="font-size:14px;color:var(--dc-text-muted);margin:0 0 18px;">No hay KPIs registrados para esta empresa.</p>
+          {% if request.user.is_staff %}
+            <a href="{% url 'kpi_create' %}?sociedad={{ company.pk }}" class="btn-accent">
+              <i class="fa-solid fa-plus"></i> Añadir primer KPI
+            </a>
+          {% endif %}
         </div>
-      </div>
-      {% endif %}
-      {% if company.gd_persona_contacto_2 or company.gd_email_2 %}
-      <div class="at-grid-3" style="margin-bottom:12px;">
-        <div class="detail-block">
-          <div class="detail-label">Contacto 2</div>
-          <div class="detail-value">{{ company.gd_persona_contacto_2|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Email</div>
-          <div class="detail-value">{{ company.gd_email_2|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Teléfono</div>
-          <div class="detail-value">{{ company.gd_phone_2|default:"—" }}</div>
-        </div>
-      </div>
-      {% endif %}
-      {% if company.gd_persona_contacto_3 or company.gd_email_3 %}
-      <div class="at-grid-3">
-        <div class="detail-block">
-          <div class="detail-label">Contacto 3</div>
-          <div class="detail-value">{{ company.gd_persona_contacto_3|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Email</div>
-          <div class="detail-value">{{ company.gd_email_3|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Teléfono</div>
-          <div class="detail-value">{{ company.gd_phone_3|default:"—" }}</div>
-        </div>
-      </div>
-      {% endif %}
-      {% if not company.gd_ceo and not company.gd_persona_contacto_2 and not company.gd_persona_contacto_3 %}
-        <span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin contactos registrados</span>
-      {% endif %}
-    </div>
-
-    <!-- Fondo -->
-    <div style="border-top:1px solid var(--dc-border);padding-top:16px;">
-      <div class="detail-section-label">Fondo</div>
-      <div class="at-grid-3">
-        <div class="detail-block">
-          <div class="detail-label">Fondo Invertido</div>
-          <div class="detail-value">{{ company.gd_fondo|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Miembro gestor</div>
-          <div class="detail-value">{{ company.gd_fondo_miembro_equipo|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Código interno</div>
-          <div class="detail-value">{{ company.gd_internal_code|default:"—" }}</div>
-        </div>
-      </div>
-      {% if company.gd_opi or company.gd_organo_admon %}
-      <div class="at-grid-2" style="margin-top:12px;">
-        <div class="detail-block">
-          <div class="detail-label">OPI</div>
-          <div class="detail-value">{{ company.gd_opi|default:"—" }}</div>
-        </div>
-        <div class="detail-block">
-          <div class="detail-label">Órgano de Administración</div>
-          <div class="detail-value">{{ company.gd_organo_admon|default:"—" }}</div>
-        </div>
-      </div>
-      {% endif %}
-    </div>
-
-  </div>
-</div>
-
-<!-- ── SECCIÓN 2: Strategy Classification ────────────── -->
-<div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card__header">
-    <h2 class="dc-card__title"><i class="fa-solid fa-sitemap" style="color:var(--dc-accent);margin-right:6px;"></i>Strategy Classification</h2>
-  </div>
-  <div class="dc-card__body">
-    <div class="at-grid-2" style="margin-bottom:16px;">
-      <div class="detail-block">
-        <div class="detail-label">Estadio</div>
-        <div class="detail-value">{{ company.cd_estadio|default:"—" }}</div>
-      </div>
-      <div class="detail-block">
-        <div class="detail-label">Clasificación Vertical</div>
-        <div class="detail-value">{{ company.cd_vertical_clasification|default:"—" }}</div>
-      </div>
-    </div>
-    <div class="at-grid-2" style="margin-bottom:16px;">
-      <div class="detail-block">
-        <div class="detail-label">Tech Sector</div>
-        <div class="detail-value">{{ company.cd_tech_sector|default:"—" }}</div>
-      </div>
-      <div class="detail-block">
-        <div class="detail-label">Tech SubSector</div>
-        <div class="detail-value">{{ company.cd_tech_subsector|default:"—" }}</div>
-      </div>
-    </div>
-    <div class="at-grid-2">
-      <div class="detail-block">
-        <div class="detail-label">Industrial Sector</div>
-        <div class="detail-value">{{ company.cd_industrial_sector|default:"—" }}</div>
-      </div>
-      <div class="detail-block">
-        <div class="detail-label">Industrial SubSector</div>
-        <div class="detail-value">{{ company.cd_industrial_subsector|default:"—" }}</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── SECCIÓN 3: Strategy Definition ────────────────── -->
-{% if company.sd_valor_diferencial_tecnologico or company.sd_valor_diferencial_mercado or company.sd_propuesta_de_valor or company.sd_business_model or company.sd_clientes or company.sd_competidores %}
-<div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card__header">
-    <h2 class="dc-card__title"><i class="fa-solid fa-chess" style="color:var(--dc-accent);margin-right:6px;"></i>Strategy Definition</h2>
-  </div>
-  <div class="dc-card__body" style="display:flex;flex-direction:column;gap:18px;">
-    {% if company.sd_valor_diferencial_tecnologico %}
-    <div class="detail-text-block">
-      <div class="detail-label">Valor Diferencial Tecnológico</div>
-      <div class="detail-text">{{ company.sd_valor_diferencial_tecnologico }}</div>
-    </div>
-    {% endif %}
-    {% if company.sd_valor_diferencial_mercado %}
-    <div class="detail-text-block">
-      <div class="detail-label">Valor Diferencial Mercado</div>
-      <div class="detail-text">{{ company.sd_valor_diferencial_mercado }}</div>
-    </div>
-    {% endif %}
-    {% if company.sd_propuesta_de_valor %}
-    <div class="detail-text-block">
-      <div class="detail-label">Propuesta de Valor</div>
-      <div class="detail-text">{{ company.sd_propuesta_de_valor }}</div>
-    </div>
-    {% endif %}
-    {% if company.sd_business_model %}
-    <div class="detail-text-block">
-      <div class="detail-label">Modelo de Negocio</div>
-      <div class="detail-text">{{ company.sd_business_model }}</div>
-    </div>
-    {% endif %}
-    {% if company.sd_clientes %}
-    <div class="detail-text-block">
-      <div class="detail-label">Clientes</div>
-      <div class="detail-text">{{ company.sd_clientes }}</div>
-    </div>
-    {% endif %}
-    {% if company.sd_competidores %}
-    <div class="detail-text-block">
-      <div class="detail-label">Competidores</div>
-      <div class="detail-text">{{ company.sd_competidores }}</div>
-    </div>
-    {% endif %}
-  </div>
-</div>
-{% endif %}
-
-<!-- ── SECCIÓN 4: Market Definition ──────────────────── -->
-{% if company.mkt_tam_descripcion or company.mkt_tam_value or company.mkt_sam_descripcion or company.mkt_sam_value or company.mkt_som_descripcion or company.mkt_som_value %}
-<div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card__header">
-    <h2 class="dc-card__title"><i class="fa-solid fa-chart-pie" style="color:var(--dc-accent);margin-right:6px;"></i>Market Definition</h2>
-  </div>
-  <div class="dc-card__body">
-
-    <!-- TAM / SAM / SOM cards -->
-    <div class="at-grid-3" style="margin-bottom:24px;">
-
-      <div style="background:var(--dc-bg);border:1px solid #bfdbfe;border-radius:10px;padding:16px;">
-        <div style="font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">TAM · Mercado Total</div>
-        {% if company.mkt_tam_value %}
-          <div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_tam_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
-        {% endif %}
-        {% if company.mkt_tam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_tam_volume }} uds.</div>{% endif %}
-        {% if company.mkt_tam_cagr %}<div style="margin-top:8px;"><span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_tam_cagr }}%</span></div>{% endif %}
-        {% if not company.mkt_tam_value and not company.mkt_tam_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
-      </div>
-
-      <div style="background:var(--dc-bg);border:1px solid #a7f3d0;border-radius:10px;padding:16px;">
-        <div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">SAM · Mercado Disponible</div>
-        {% if company.mkt_sam_value %}
-          <div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_sam_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
-        {% endif %}
-        {% if company.mkt_sam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_sam_volume }} uds.</div>{% endif %}
-        {% if company.mkt_sam_cagr %}<div style="margin-top:8px;"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_sam_cagr }}%</span></div>{% endif %}
-        {% if not company.mkt_sam_value and not company.mkt_sam_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
-      </div>
-
-      <div style="background:var(--dc-bg);border:1px solid #ddd6fe;border-radius:10px;padding:16px;">
-        <div style="font-size:10px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">SOM · Mercado Objetivo</div>
-        {% if company.mkt_som_value %}
-          <div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_som_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
-        {% endif %}
-        {% if company.mkt_som_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_som_volume }} uds.</div>{% endif %}
-        {% if company.mkt_som_cagr %}<div style="margin-top:8px;"><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_som_cagr }}%</span></div>{% endif %}
-        {% if not company.mkt_som_value and not company.mkt_som_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
-      </div>
-
-    </div>
-
-    <!-- Descripciones -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
-      {% if company.mkt_tam_descripcion %}
-      <div class="detail-text-block">
-        <div class="detail-label">Descripción TAM</div>
-        <div class="detail-text">{{ company.mkt_tam_descripcion }}</div>
-      </div>
-      {% endif %}
-      {% if company.mkt_sam_descripcion %}
-      <div class="detail-text-block">
-        <div class="detail-label">Descripción SAM</div>
-        <div class="detail-text">{{ company.mkt_sam_descripcion }}</div>
-      </div>
-      {% endif %}
-      {% if company.mkt_som_descripcion %}
-      <div class="detail-text-block">
-        <div class="detail-label">Descripción SOM</div>
-        <div class="detail-text">{{ company.mkt_som_descripcion }}</div>
-      </div>
-      {% endif %}
-    </div>
-
-  </div>
-</div>
-{% endif %}
-
-<!-- ── SECCIÓN 5: Exit Strategy ───────────────────────── -->
-{% if company.exit_value or company.exit_descripcion or company.exit_empresas_comparables %}
-<div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card__header">
-    <h2 class="dc-card__title"><i class="fa-solid fa-flag-checkered" style="color:var(--dc-accent);margin-right:6px;"></i>Exit Strategy</h2>
-  </div>
-  <div class="dc-card__body">
-    {% if company.exit_value %}
-      <div style="margin-bottom:20px;padding:16px;background:var(--dc-bg);border-radius:10px;border:1px solid var(--dc-border);display:inline-block;">
-        <div class="detail-label" style="margin-bottom:4px;">Valor estimado de salida</div>
-        <div style="font-size:28px;font-weight:700;color:var(--dc-accent);">{{ company.exit_value }} <span style="font-size:16px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
-      </div>
-    {% endif %}
-    <div style="display:flex;flex-direction:column;gap:16px;">
-      {% if company.exit_descripcion %}
-      <div class="detail-text-block">
-        <div class="detail-label">Estrategia de venta</div>
-        <div class="detail-text">{{ company.exit_descripcion }}</div>
-      </div>
-      {% endif %}
-      {% if company.exit_empresas_comparables %}
-      <div class="detail-text-block">
-        <div class="detail-label">Empresas comparables</div>
-        <div class="detail-text">{{ company.exit_empresas_comparables }}</div>
-      </div>
       {% endif %}
     </div>
   </div>
-</div>
-{% endif %}
 
-<!-- ── Estilos locales ────────────────────────────────── -->
+</div><!-- /tab-kpis -->
+
+
+<!-- ── Estilos locales ────────────────────────────────────── -->
 <style>
+  .dc-tabs              { display:flex; gap:4px; margin-bottom:20px;
+                          border-bottom:2px solid var(--dc-border); }
+  .dc-tab               { background:none; border:none; padding:10px 18px 12px;
+                          font-size:13px; font-weight:500; color:var(--dc-text-muted);
+                          cursor:pointer; border-bottom:2px solid transparent;
+                          margin-bottom:-2px; display:flex; align-items:center; gap:6px;
+                          transition:color .15s; }
+  .dc-tab:hover         { color:var(--dc-text); }
+  .dc-tab.active        { color:var(--dc-accent); border-bottom-color:var(--dc-accent); font-weight:600; }
+  .dc-tab-badge         { background:var(--dc-accent); color:#fff; border-radius:10px;
+                          padding:1px 7px; font-size:11px; font-weight:600; }
   .detail-block         { display:flex; flex-direction:column; margin-bottom:14px; }
   .detail-label         { font-size:10.5px; font-weight:600; color:var(--dc-text-muted);
                           text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
   .detail-value         { font-size:14px; color:var(--dc-text); }
   .detail-section-label { font-size:11px; font-weight:700; color:var(--dc-text-muted);
                           text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
-  .detail-text-block    { padding:14px; background:var(--dc-bg); border-radius:8px;
+  .detail-text-block    { padding:14px 16px; background:var(--dc-bg); border-radius:8px;
                           border-left:3px solid var(--dc-accent); }
   .detail-text          { font-size:14px; color:var(--dc-text); line-height:1.65;
                           white-space:pre-wrap; margin-top:6px; }
 </style>
+
+<!-- ── Tab JS ─────────────────────────────────────────────── -->
+<script>
+  document.querySelectorAll('.dc-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.dc-tab').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.dc-tab-panel').forEach(function(p) { p.style.display = 'none'; });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
+    });
+  });
+</script>
 
 {% endblock %}
