@@ -323,6 +323,26 @@ body.sidebar-collapsed .dc-main    { margin-left: 0 !important; }
 }
 .dc-table td.actions-cell form { margin: 0; }
 
+/* --- Botón icono (tablas) ------------------------------ */
+.btn-icon {
+  display: inline-flex !important; align-items: center !important; justify-content: center !important;
+  width: 30px !important; height: 30px !important; border-radius: 6px !important;
+  border: 1px solid var(--dc-border) !important;
+  background: transparent !important;
+  color: var(--dc-text-muted) !important;
+  font-size: .8rem; cursor: pointer;
+  text-decoration: none !important;
+  padding: 0 !important; line-height: 1 !important;
+  transition: background var(--dc-transition), color var(--dc-transition),
+              border-color var(--dc-transition);
+  flex-shrink: 0;
+}
+.btn-icon:hover              { background: #f1f5f9 !important; color: var(--dc-text) !important; border-color: #cbd5e1 !important; }
+.btn-icon--accent            { color: var(--dc-accent) !important; border-color: rgba(16,185,129,.35) !important; }
+.btn-icon--accent:hover      { background: rgba(16,185,129,.08) !important; border-color: var(--dc-accent) !important; }
+.btn-icon--danger            { color: #ef4444 !important; border-color: rgba(239,68,68,.3) !important; }
+.btn-icon--danger:hover      { background: rgba(239,68,68,.07) !important; border-color: #ef4444 !important; }
+
 /* --- Botones ------------------------------------------- */
 .btn-accent {
   background: var(--dc-accent);

@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block content %}
+
   {% if company_invited %}
     <div class="dc-alert dc-alert--success" style="margin-bottom:20px;">
       <i class="fa-solid fa-circle-check"></i>
@@ -14,6 +15,7 @@
     </div>
   {% endif %}
 
+  <!-- ── Cabecera ── -->
   <div class="dc-page-header">
     <h1 class="dc-page-title">Empresas</h1>
     <div class="dc-page-actions">
@@ -31,6 +33,7 @@
     </div>
   </div>
 
+  <!-- ── Tabla ── -->
   <div class="dc-card">
     <div class="dc-card__header">
       <span class="dc-card__title">Listado de inversiones</span>
@@ -39,7 +42,7 @@
       <table id="companies-table" class="dc-table table">
         <thead>
           <tr>
-            <th class="text-center" style="width:40px;">
+            <th class="text-center" style="width:36px;">
               <input type="checkbox" id="select-all-companies" />
             </th>
             <th>Empresa</th>
@@ -51,74 +54,114 @@
             <th>CEO</th>
             <th>Email CEO</th>
             <th>Teléfono</th>
-            <th>Acciones</th>
+            <th style="width:120px;">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {% for company in companies %}
             <tr>
-              <td class="text-center">
+              <td class="text-center" style="padding:0 14px;">
                 <input type="checkbox" class="company-select" value="{{ company.id }}" />
               </td>
+
+              <!-- Empresa: logo + nombre en flex -->
               <td>
-                {% if company.gd_logo %}
-                  <img src="{{ company.gd_logo.url }}" alt="Logo" style="height:24px;width:auto;margin-right:6px;vertical-align:middle;" />
-                {% endif %}
-                {{ company.gd_sociedad }}
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                  {% if company.gd_logo %}
+                    <img src="{{ company.gd_logo.url }}" alt=""
+                         style="height:28px;width:28px;object-fit:contain;border-radius:4px;
+                                border:1px solid var(--dc-border);background:#fff;flex-shrink:0;">
+                  {% else %}
+                    <div style="height:28px;width:28px;border-radius:4px;background:#f1f5f9;
+                                display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <i class="fa-solid fa-building" style="font-size:12px;color:var(--dc-text-muted);"></i>
+                    </div>
+                  {% endif %}
+                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+                               font-weight:500;color:var(--dc-text);">
+                    {{ company.gd_sociedad }}
+                  </span>
+                </div>
               </td>
-              <td>{{ company.gd_internal_code|default:"" }}</td>
-              <td>{{ company.gd_cif|default:"" }}</td>
-              <td>{{ company.gd_pais|default:"" }}</td>
-              <td>
+
+              <td style="white-space:nowrap;color:var(--dc-text-muted);">
+                {{ company.gd_internal_code|default:"—" }}
+              </td>
+              <td style="white-space:nowrap;">{{ company.gd_cif|default:"—" }}</td>
+              <td style="white-space:nowrap;">{{ company.gd_pais|default:"—" }}</td>
+
+              <!-- Estadio badge -->
+              <td style="white-space:nowrap;">
                 {% if company.cd_estadio %}
                   <span class="dc-badge dc-badge--green">{{ company.cd_estadio }}</span>
+                {% else %}
+                  <span style="color:var(--dc-text-muted);">—</span>
                 {% endif %}
               </td>
-              <td>{{ company.cd_tech_sector|default:"" }}</td>
-              <td>{{ company.gd_ceo|default:"" }}</td>
-              <td>{{ company.gd_email_ceo|default:"" }}</td>
-              <td>{{ company.gd_phone_ceo|default:"" }}</td>
-              <td class="actions-cell">
-                <a class="btn-ghost" href="{% url 'company_detail' company.id %}" title="Ver detalle">
-                  <i class="fa-solid fa-eye"></i>
-                </a>
-                <a class="btn-ghost" href="{% url 'company_edit' company.id %}">
-                  <i class="fa-solid fa-pen-to-square"></i> Editar
-                </a>
-                {% if request.user.is_staff %}
-                  {% if company.gd_email_ceo %}
-                    <a
-                      class="btn-ghost"
-                      href="{% url 'company_invite' company.id %}"
-                      title="Enviar invitación al CEO ({{ company.gd_email_ceo }})"
-                      style="color:var(--dc-accent);border-color:var(--dc-accent);"
-                    >
-                      <i class="fa-solid fa-envelope-open-text"></i>
-                    </a>
-                  {% else %}
-                    <button
-                      class="btn-ghost"
-                      type="button"
-                      disabled
-                      title="Sin email de CEO"
-                      style="opacity:.35;cursor:not-allowed;"
-                    >
-                      <i class="fa-solid fa-envelope-open-text"></i>
-                    </button>
+
+              <td>{{ company.cd_tech_sector|default:"—" }}</td>
+              <td style="white-space:nowrap;">{{ company.gd_ceo|default:"—" }}</td>
+              <td style="white-space:nowrap;">
+                {% if company.gd_email_ceo %}
+                  <a href="mailto:{{ company.gd_email_ceo }}"
+                     style="color:var(--dc-accent);text-decoration:none;">
+                    {{ company.gd_email_ceo }}
+                  </a>
+                {% else %}—{% endif %}
+              </td>
+              <td style="white-space:nowrap;">{{ company.gd_phone_ceo|default:"—" }}</td>
+
+              <!-- Acciones: todos icon-only, mismo tamaño -->
+              <td style="white-space:nowrap;">
+                <div style="display:flex;align-items:center;gap:4px;">
+
+                  <!-- Ver detalle -->
+                  <a class="btn-icon" href="{% url 'company_detail' company.id %}"
+                     title="Ver detalle">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+
+                  <!-- Editar -->
+                  <a class="btn-icon" href="{% url 'company_edit' company.id %}"
+                     title="Editar empresa">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+
+                  {% if request.user.is_staff %}
+                    <!-- Invitar CEO -->
+                    {% if company.gd_email_ceo %}
+                      <a class="btn-icon btn-icon--accent"
+                         href="{% url 'company_invite' company.id %}"
+                         title="Enviar invitación al CEO ({{ company.gd_email_ceo }})">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                      </a>
+                    {% else %}
+                      <button class="btn-icon" type="button" disabled
+                              title="Sin email de CEO"
+                              style="opacity:.3;cursor:not-allowed;">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                      </button>
+                    {% endif %}
+
+                    <!-- Eliminar -->
+                    <form method="post" action="{% url 'company_delete' company.id %}" style="margin:0;">
+                      {% csrf_token %}
+                      <button class="btn-icon btn-icon--danger" type="submit"
+                              title="Eliminar empresa"
+                              onclick="return confirm('¿Eliminar {{ company.gd_sociedad }}?')">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </form>
                   {% endif %}
-                  <form method="post" action="{% url 'company_delete' company.id %}">
-                    {% csrf_token %}
-                    <button class="btn-danger-ghost" type="submit">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </form>
-                {% endif %}
+
+                </div>
               </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="11" class="text-center py-4" style="color:var(--dc-text-muted);">
-                No hay registros.
+              <td colspan="11" style="text-align:center;padding:40px;color:var(--dc-text-muted);">
+                <i class="fa-solid fa-building" style="font-size:28px;display:block;margin-bottom:10px;opacity:.3;"></i>
+                No hay empresas registradas.
               </td>
             </tr>
           {% endfor %}
@@ -127,10 +170,12 @@
     </div>
   </div>
 
+  <!-- Formulario oculto para exportar seleccionados -->
   <form id="export-companies-form" method="post" action="{% url 'company_export_select' %}">
     {% csrf_token %}
     <input type="hidden" name="company_ids" id="export-company-ids" />
   </form>
+
 {% endblock %}
 
 {% block extra_scripts %}
@@ -150,8 +195,7 @@
       });
 
       $('#select-all-companies').on('change', function () {
-        var checked = $(this).is(':checked');
-        $('.company-select').prop('checked', checked);
+        $('.company-select').prop('checked', $(this).is(':checked'));
       });
 
       $('#export-selected-btn').on('click', function () {
