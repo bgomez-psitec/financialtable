@@ -1219,7 +1219,6 @@ def _kpi_year_range():
     return list(range(2020, current + 2))
 
 
-@login_required
 def _allowed_companies(user):
     """Devuelve el queryset de empresas accesibles para el usuario."""
     if user.is_staff:
@@ -1227,6 +1226,7 @@ def _allowed_companies(user):
     return CompanyInvestment.objects.filter(user_links__user=user)
 
 
+@login_required
 def kpis(request):
     allowed = _allowed_companies(request.user)
     qs = KPIEmpresa.objects.select_related("sociedad").filter(sociedad__in=allowed)
