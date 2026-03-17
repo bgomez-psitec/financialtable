@@ -32,7 +32,7 @@
             <option value="">— Seleccionar empresa —</option>
             {% for c in companies %}
               <option value="{{ c.pk }}"
-                {% if kpi and kpi.sociedad_id == c.pk %}selected{% endif %}>
+                {% if not clone_mode and kpi and kpi.sociedad_id == c.pk %}selected{% endif %}>
                 {{ c.gd_sociedad }}
               </option>
             {% endfor %}
@@ -45,7 +45,7 @@
             <option value="">— Seleccionar año —</option>
             {% for y in years %}
               <option value="{{ y }}"
-                {% if kpi and kpi.anio == y %}selected{% endif %}>
+                {% if not clone_mode and kpi and kpi.anio == y %}selected{% endif %}>
                 {{ y }}
               </option>
             {% endfor %}
@@ -58,7 +58,7 @@
             <option value="">— Seleccionar trimestre —</option>
             {% for val, label in trimestres %}
               <option value="{{ val }}"
-                {% if kpi and kpi.trimestre == val %}selected{% endif %}>
+                {% if not clone_mode and kpi and kpi.trimestre == val %}selected{% endif %}>
                 {{ label }}
               </option>
             {% endfor %}

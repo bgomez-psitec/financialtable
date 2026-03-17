@@ -26,6 +26,7 @@ urlpatterns = [
     path("kpis/", views.kpis, name="kpis"),
     path("kpis/new/", views.kpi_create, name="kpi_create"),
     path("kpis/<int:kpi_id>/edit/", views.kpi_edit, name="kpi_edit"),
+    path("kpis/<int:kpi_id>/clone/", views.kpi_clone, name="kpi_clone"),
     path("kpis/<int:kpi_id>/delete/", views.kpi_delete, name="kpi_delete"),
     path("auth/password-reset/", views.password_reset_request, name="password_reset"),
     path("auth/password-reset/done/", views.password_reset_done, name="password_reset_done"),

@@ -1400,6 +1400,75 @@ def kpi_edit(request, kpi_id):
 
 
 @login_required
+def kpi_clone(request, kpi_id):
+    allowed = _allowed_companies(request.user)
+    src = get_object_or_404(KPIEmpresa, pk=kpi_id, sociedad__in=allowed)
+    years = _kpi_year_range()
+    error = None
+
+    if request.method == "POST":
+        sociedad_id = request.POST.get("sociedad", "")
+        anio = request.POST.get("anio", "")
+        trimestre = request.POST.get("trimestre", "")
+
+        if not sociedad_id or not anio or not trimestre:
+            error = "Todos los campos son obligatorios."
+        elif trimestre not in dict(KPIEmpresa.TRIMESTRE_CHOICES):
+            error = "Trimestre no válido."
+        else:
+            try:
+                sociedad = allowed.get(pk=sociedad_id)
+                KPIEmpresa.objects.create(
+                    sociedad=sociedad,
+                    anio=int(anio),
+                    trimestre=trimestre,
+                    trl=request.POST.get("trl") or None,
+                    mrl=request.POST.get("mrl") or None,
+                    estimated_breakeven_year=request.POST.get("estimated_breakeven_year") or None,
+                    estimated_time_to_market=request.POST.get("estimated_time_to_market") or None,
+                    prueba_laboratorio_validada=request.POST.get("prueba_laboratorio_validada", ""),
+                    pilot_plant_terminada=request.POST.get("pilot_plant_terminada", ""),
+                    producto_pilot_plant_validado=request.POST.get("producto_pilot_plant_validado", ""),
+                    flagship_plant_terminada=request.POST.get("flagship_plant_terminada", ""),
+                    producto_flagship_validado=request.POST.get("producto_flagship_validado", ""),
+                    comercializacion=request.POST.get("comercializacion", ""),
+                    rendimiento_proceso=request.POST.get("rendimiento_proceso") or None,
+                    reproducibilidad_experimental=request.POST.get("reproducibilidad_experimental") or None,
+                    coste_energetico=request.POST.get("coste_energetico") or None,
+                    coste_materias_primas=request.POST.get("coste_materias_primas") or None,
+                    nuevos_leads_clientes=request.POST.get("nuevos_leads_clientes") or None,
+                    qualified_clientes=request.POST.get("qualified_clientes") or None,
+                    ndas_clientes_firmados=request.POST.get("ndas_clientes_firmados") or None,
+                    loi_clientes_firmados=request.POST.get("loi_clientes_firmados") or None,
+                    presupuestos_clientes_enviados=request.POST.get("presupuestos_clientes_enviados") or None,
+                    presupuestos_clientes_firmados=request.POST.get("presupuestos_clientes_firmados") or None,
+                    acuerdos_distribucion_firmados=request.POST.get("acuerdos_distribucion_firmados") or None,
+                    acuerdos_colaboracion_clientes_firmados=request.POST.get("acuerdos_colaboracion_clientes_firmados") or None,
+                )
+                return HttpResponseRedirect(reverse("kpis"))
+            except CompanyInvestment.DoesNotExist:
+                error = "Empresa no encontrada."
+            except Exception:
+                error = "Ya existe un KPI para esa empresa, año y trimestre."
+
+    # En GET: pre-cargar el formulario con los datos del KPI origen (año/trimestre vacíos)
+    # Creamos un objeto temporal sin pk para que el template no lo trate como edición
+    kpi_prefill = src  # los valores se muestran; año/trimestre los elige el usuario
+    return render(request, "core/kpi_form.html", {
+        "kpi": kpi_prefill,
+        "companies": allowed,
+        "years": years,
+        "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
+        "trl_mrl_range": range(1, 10),
+        "sn_choices": KPIEmpresa.SN_CHOICES,
+        "error": error,
+        "action": "Clonar KPI",
+        "clone_mode": True,
+        "active_page": "kpis",
+    })
+
+
+@login_required
 def kpi_delete(request, kpi_id):
     allowed = _allowed_companies(request.user)
     kpi = get_object_or_404(KPIEmpresa, pk=kpi_id, sociedad__in=allowed)
