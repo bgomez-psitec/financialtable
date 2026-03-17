@@ -3,23 +3,30 @@
 
 {% block content %}
 
-<!-- Cabecera -->
-<div class="dc-content-header">
+<!-- ── Cabecera de página ─────────────────────────────── -->
+<div class="dc-page-header">
   <div style="display:flex;align-items:center;gap:16px;">
     {% if company.gd_logo %}
-      <img src="{{ company.gd_logo.url }}" alt="Logo {{ company.gd_sociedad }}"
-           style="height:52px;width:52px;object-fit:contain;border-radius:8px;border:1px solid var(--dc-border);background:#fff;padding:4px;">
+      <img src="{{ company.gd_logo.url }}" alt="Logo"
+           style="height:56px;width:56px;object-fit:contain;border-radius:10px;
+                  border:1px solid var(--dc-border);background:#fff;padding:4px;
+                  box-shadow:var(--dc-shadow);">
     {% else %}
-      <div style="height:52px;width:52px;border-radius:8px;background:var(--dc-sidebar);display:flex;align-items:center;justify-content:center;">
-        <i class="fa-solid fa-building" style="color:#fff;font-size:22px;"></i>
+      <div style="height:56px;width:56px;border-radius:10px;background:var(--dc-sidebar);
+                  display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fa-solid fa-building" style="color:#fff;font-size:24px;"></i>
       </div>
     {% endif %}
     <div>
-      <h1 class="dc-content-title" style="margin:0;">{{ company.gd_sociedad }}</h1>
-      {% if company.gd_cif %}<span style="font-size:13px;color:var(--dc-text-muted);">CIF: {{ company.gd_cif }}</span>{% endif %}
+      <h1 class="dc-page-title">{{ company.gd_sociedad }}</h1>
+      <p class="dc-page-subtitle">
+        {% if company.gd_cif %}CIF: {{ company.gd_cif }}{% endif %}
+        {% if company.gd_cif and company.gd_ciudad %} · {% endif %}
+        {% if company.gd_ciudad %}{{ company.gd_ciudad }}{% if company.gd_pais %}, {{ company.gd_pais }}{% endif %}{% endif %}
+      </p>
     </div>
   </div>
-  <div class="dc-content-actions">
+  <div class="dc-page-actions">
     {% if request.user.is_staff %}
       <a href="{% url 'company_edit' company.pk %}" class="btn-accent">
         <i class="fa-solid fa-pen"></i> Editar
@@ -31,213 +38,363 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     SECCIÓN 1: Datos Generales
-═══════════════════════════════════════════════ -->
+<!-- ── SECCIÓN 1: Datos Generales ────────────────────── -->
 <div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card-header"><span class="dc-card-title">Datos Generales</span></div>
-  <div class="dc-card-body">
+  <div class="dc-card__header">
+    <h2 class="dc-card__title"><i class="fa-solid fa-building-columns" style="color:var(--dc-accent);margin-right:6px;"></i>Datos Generales</h2>
+  </div>
+  <div class="dc-card__body">
 
     {% if company.gd_descripcion %}
-      <p style="font-size:14px;color:var(--dc-text);margin-bottom:20px;line-height:1.6;">{{ company.gd_descripcion }}</p>
+      <p style="font-size:14px;color:var(--dc-text);line-height:1.65;margin:0 0 20px;padding-bottom:20px;border-bottom:1px solid var(--dc-border);">{{ company.gd_descripcion }}</p>
     {% endif %}
 
-    <div class="air-grid-3" style="gap:16px;margin-bottom:16px;">
-      {% include "core/_detail_field.html" with label="Fecha de constitución" value=company.gd_fecha_constitucion %}
-      {% include "core/_detail_field.html" with label="CIF" value=company.gd_cif %}
-      {% include "core/_detail_field.html" with label="Código Postal" value=company.gd_codigo_postal %}
+    <!-- Datos clave -->
+    <div class="at-grid-3" style="margin-bottom:20px;">
+      <div class="detail-block">
+        <div class="detail-label">Fecha de constitución</div>
+        <div class="detail-value">{{ company.gd_fecha_constitucion|default:"—" }}</div>
+      </div>
+      <div class="detail-block">
+        <div class="detail-label">Código Postal</div>
+        <div class="detail-value">{{ company.gd_codigo_postal|default:"—" }}</div>
+      </div>
+      <div class="detail-block">
+        <div class="detail-label">Dirección</div>
+        <div class="detail-value">{{ company.gd_direccion|default:"—" }}</div>
+      </div>
+    </div>
+    <div class="at-grid-3" style="margin-bottom:20px;">
+      <div class="detail-block">
+        <div class="detail-label">Ciudad</div>
+        <div class="detail-value">{{ company.gd_ciudad|default:"—" }}</div>
+      </div>
+      <div class="detail-block">
+        <div class="detail-label">Provincia</div>
+        <div class="detail-value">{{ company.gd_provincia|default:"—" }}</div>
+      </div>
+      <div class="detail-block">
+        <div class="detail-label">Comunidad Autónoma</div>
+        <div class="detail-value">{{ company.gd_comunidad_autonoma|default:"—" }}</div>
+      </div>
     </div>
 
-    <div class="air-grid-3" style="gap:16px;margin-bottom:16px;">
-      {% include "core/_detail_field.html" with label="Dirección" value=company.gd_direccion %}
-      {% include "core/_detail_field.html" with label="Ciudad" value=company.gd_ciudad %}
-      {% include "core/_detail_field.html" with label="Provincia" value=company.gd_provincia %}
-    </div>
-
-    <div class="air-grid-3" style="gap:16px;margin-bottom:16px;">
-      {% include "core/_detail_field.html" with label="Comunidad Autónoma" value=company.gd_comunidad_autonoma %}
-      {% include "core/_detail_field.html" with label="País" value=company.gd_pais %}
-    </div>
-
-    <div class="air-grid-2" style="gap:16px;margin-bottom:16px;">
-      <div>
-        <div class="detail-label">Website</div>
+    <!-- Web / LinkedIn -->
+    <div class="at-grid-2" style="margin-bottom:20px;">
+      <div class="detail-block">
+        <div class="detail-label"><i class="fa-solid fa-globe fa-xs"></i> Website</div>
         <div class="detail-value">
           {% if company.gd_website %}
-            <a href="{{ company.gd_website }}" target="_blank" rel="noopener" style="color:var(--dc-accent);word-break:break-all;">
-              <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:11px;"></i> {{ company.gd_website }}
+            <a href="{{ company.gd_website }}" target="_blank" rel="noopener"
+               style="color:var(--dc-accent);word-break:break-all;">
+              {{ company.gd_website }}
             </a>
-          {% else %}<span class="detail-empty">—</span>{% endif %}
+          {% else %}—{% endif %}
         </div>
       </div>
-      <div>
-        <div class="detail-label">LinkedIn</div>
+      <div class="detail-block">
+        <div class="detail-label"><i class="fa-brands fa-linkedin fa-xs"></i> LinkedIn</div>
         <div class="detail-value">
           {% if company.gd_linkedin %}
-            <a href="{{ company.gd_linkedin }}" target="_blank" rel="noopener" style="color:var(--dc-accent);word-break:break-all;">
-              <i class="fa-brands fa-linkedin" style="font-size:14px;"></i> {{ company.gd_linkedin }}
+            <a href="{{ company.gd_linkedin }}" target="_blank" rel="noopener"
+               style="color:var(--dc-accent);word-break:break-all;">
+              {{ company.gd_linkedin }}
             </a>
-          {% else %}<span class="detail-empty">—</span>{% endif %}
+          {% else %}—{% endif %}
         </div>
       </div>
     </div>
 
     <!-- Contactos -->
-    <div style="margin-top:20px;border-top:1px solid var(--dc-border);padding-top:16px;">
-      <div style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Contactos</div>
-
+    <div style="border-top:1px solid var(--dc-border);padding-top:16px;margin-bottom:20px;">
+      <div class="detail-section-label">Contactos</div>
       {% if company.gd_ceo or company.gd_email_ceo or company.gd_phone_ceo %}
-      <div class="air-grid-3" style="gap:16px;margin-bottom:12px;">
-        {% include "core/_detail_field.html" with label="Director General" value=company.gd_ceo %}
-        {% include "core/_detail_field.html" with label="Email CEO" value=company.gd_email_ceo %}
-        {% include "core/_detail_field.html" with label="Teléfono CEO" value=company.gd_phone_ceo %}
+      <div class="at-grid-3" style="margin-bottom:12px;">
+        <div class="detail-block">
+          <div class="detail-label">Director General</div>
+          <div class="detail-value">{{ company.gd_ceo|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Email CEO</div>
+          <div class="detail-value">
+            {% if company.gd_email_ceo %}<a href="mailto:{{ company.gd_email_ceo }}" style="color:var(--dc-accent);">{{ company.gd_email_ceo }}</a>{% else %}—{% endif %}
+          </div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Teléfono CEO</div>
+          <div class="detail-value">{{ company.gd_phone_ceo|default:"—" }}</div>
+        </div>
       </div>
       {% endif %}
-
       {% if company.gd_persona_contacto_2 or company.gd_email_2 %}
-      <div class="air-grid-3" style="gap:16px;margin-bottom:12px;">
-        {% include "core/_detail_field.html" with label="Contacto 2" value=company.gd_persona_contacto_2 %}
-        {% include "core/_detail_field.html" with label="Email" value=company.gd_email_2 %}
-        {% include "core/_detail_field.html" with label="Teléfono" value=company.gd_phone_2 %}
+      <div class="at-grid-3" style="margin-bottom:12px;">
+        <div class="detail-block">
+          <div class="detail-label">Contacto 2</div>
+          <div class="detail-value">{{ company.gd_persona_contacto_2|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">{{ company.gd_email_2|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Teléfono</div>
+          <div class="detail-value">{{ company.gd_phone_2|default:"—" }}</div>
+        </div>
       </div>
       {% endif %}
-
       {% if company.gd_persona_contacto_3 or company.gd_email_3 %}
-      <div class="air-grid-3" style="gap:16px;margin-bottom:12px;">
-        {% include "core/_detail_field.html" with label="Contacto 3" value=company.gd_persona_contacto_3 %}
-        {% include "core/_detail_field.html" with label="Email" value=company.gd_email_3 %}
-        {% include "core/_detail_field.html" with label="Teléfono" value=company.gd_phone_3 %}
+      <div class="at-grid-3">
+        <div class="detail-block">
+          <div class="detail-label">Contacto 3</div>
+          <div class="detail-value">{{ company.gd_persona_contacto_3|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">{{ company.gd_email_3|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Teléfono</div>
+          <div class="detail-value">{{ company.gd_phone_3|default:"—" }}</div>
+        </div>
+      </div>
+      {% endif %}
+      {% if not company.gd_ceo and not company.gd_persona_contacto_2 and not company.gd_persona_contacto_3 %}
+        <span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin contactos registrados</span>
+      {% endif %}
+    </div>
+
+    <!-- Fondo -->
+    <div style="border-top:1px solid var(--dc-border);padding-top:16px;">
+      <div class="detail-section-label">Fondo</div>
+      <div class="at-grid-3">
+        <div class="detail-block">
+          <div class="detail-label">Fondo Invertido</div>
+          <div class="detail-value">{{ company.gd_fondo|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Miembro gestor</div>
+          <div class="detail-value">{{ company.gd_fondo_miembro_equipo|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Código interno</div>
+          <div class="detail-value">{{ company.gd_internal_code|default:"—" }}</div>
+        </div>
+      </div>
+      {% if company.gd_opi or company.gd_organo_admon %}
+      <div class="at-grid-2" style="margin-top:12px;">
+        <div class="detail-block">
+          <div class="detail-label">OPI</div>
+          <div class="detail-value">{{ company.gd_opi|default:"—" }}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-label">Órgano de Administración</div>
+          <div class="detail-value">{{ company.gd_organo_admon|default:"—" }}</div>
+        </div>
       </div>
       {% endif %}
     </div>
 
-    <!-- Fondo e interno -->
-    <div style="margin-top:20px;border-top:1px solid var(--dc-border);padding-top:16px;">
-      <div style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Fondo</div>
-      <div class="air-grid-3" style="gap:16px;margin-bottom:12px;">
-        {% include "core/_detail_field.html" with label="Fondo Invertido" value=company.gd_fondo %}
-        {% include "core/_detail_field.html" with label="Miembro gestor" value=company.gd_fondo_miembro_equipo %}
-        {% include "core/_detail_field.html" with label="Código interno" value=company.gd_internal_code %}
-      </div>
-      <div class="air-grid-2" style="gap:16px;">
-        {% include "core/_detail_field.html" with label="OPI" value=company.gd_opi %}
-        {% include "core/_detail_field.html" with label="Órgano de Administración" value=company.gd_organo_admon %}
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     SECCIÓN 2: Strategy Classification
-═══════════════════════════════════════════════ -->
+<!-- ── SECCIÓN 2: Strategy Classification ────────────── -->
 <div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card-header"><span class="dc-card-title">Strategy Classification</span></div>
-  <div class="dc-card-body">
-    <div class="air-grid-3" style="gap:16px;margin-bottom:16px;">
-      {% include "core/_detail_field.html" with label="Estadio" value=company.cd_estadio %}
-      {% include "core/_detail_field.html" with label="Clasificación Vertical" value=company.cd_vertical_clasification %}
+  <div class="dc-card__header">
+    <h2 class="dc-card__title"><i class="fa-solid fa-sitemap" style="color:var(--dc-accent);margin-right:6px;"></i>Strategy Classification</h2>
+  </div>
+  <div class="dc-card__body">
+    <div class="at-grid-2" style="margin-bottom:16px;">
+      <div class="detail-block">
+        <div class="detail-label">Estadio</div>
+        <div class="detail-value">{{ company.cd_estadio|default:"—" }}</div>
+      </div>
+      <div class="detail-block">
+        <div class="detail-label">Clasificación Vertical</div>
+        <div class="detail-value">{{ company.cd_vertical_clasification|default:"—" }}</div>
+      </div>
     </div>
-    <div class="air-grid-2" style="gap:16px;margin-bottom:16px;">
-      {% include "core/_detail_field.html" with label="Tech Sector" value=company.cd_tech_sector %}
-      {% include "core/_detail_field.html" with label="Tech SubSector" value=company.cd_tech_subsector %}
+    <div class="at-grid-2" style="margin-bottom:16px;">
+      <div class="detail-block">
+        <div class="detail-label">Tech Sector</div>
+        <div class="detail-value">{{ company.cd_tech_sector|default:"—" }}</div>
+      </div>
+      <div class="detail-block">
+        <div class="detail-label">Tech SubSector</div>
+        <div class="detail-value">{{ company.cd_tech_subsector|default:"—" }}</div>
+      </div>
     </div>
-    <div class="air-grid-2" style="gap:16px;">
-      {% include "core/_detail_field.html" with label="Industrial Sector" value=company.cd_industrial_sector %}
-      {% include "core/_detail_field.html" with label="Industrial SubSector" value=company.cd_industrial_subsector %}
+    <div class="at-grid-2">
+      <div class="detail-block">
+        <div class="detail-label">Industrial Sector</div>
+        <div class="detail-value">{{ company.cd_industrial_sector|default:"—" }}</div>
+      </div>
+      <div class="detail-block">
+        <div class="detail-label">Industrial SubSector</div>
+        <div class="detail-value">{{ company.cd_industrial_subsector|default:"—" }}</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════
-     SECCIÓN 3: Strategy Definition
-═══════════════════════════════════════════════ -->
+<!-- ── SECCIÓN 3: Strategy Definition ────────────────── -->
 {% if company.sd_valor_diferencial_tecnologico or company.sd_valor_diferencial_mercado or company.sd_propuesta_de_valor or company.sd_business_model or company.sd_clientes or company.sd_competidores %}
 <div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card-header"><span class="dc-card-title">Strategy Definition</span></div>
-  <div class="dc-card-body" style="display:flex;flex-direction:column;gap:16px;">
-    {% include "core/_detail_text.html" with label="Valor Diferencial Tecnológico" value=company.sd_valor_diferencial_tecnologico %}
-    {% include "core/_detail_text.html" with label="Valor Diferencial Mercado" value=company.sd_valor_diferencial_mercado %}
-    {% include "core/_detail_text.html" with label="Propuesta de Valor" value=company.sd_propuesta_de_valor %}
-    {% include "core/_detail_text.html" with label="Modelo de Negocio" value=company.sd_business_model %}
-    {% include "core/_detail_text.html" with label="Clientes" value=company.sd_clientes %}
-    {% include "core/_detail_text.html" with label="Competidores" value=company.sd_competidores %}
+  <div class="dc-card__header">
+    <h2 class="dc-card__title"><i class="fa-solid fa-chess" style="color:var(--dc-accent);margin-right:6px;"></i>Strategy Definition</h2>
+  </div>
+  <div class="dc-card__body" style="display:flex;flex-direction:column;gap:18px;">
+    {% if company.sd_valor_diferencial_tecnologico %}
+    <div class="detail-text-block">
+      <div class="detail-label">Valor Diferencial Tecnológico</div>
+      <div class="detail-text">{{ company.sd_valor_diferencial_tecnologico }}</div>
+    </div>
+    {% endif %}
+    {% if company.sd_valor_diferencial_mercado %}
+    <div class="detail-text-block">
+      <div class="detail-label">Valor Diferencial Mercado</div>
+      <div class="detail-text">{{ company.sd_valor_diferencial_mercado }}</div>
+    </div>
+    {% endif %}
+    {% if company.sd_propuesta_de_valor %}
+    <div class="detail-text-block">
+      <div class="detail-label">Propuesta de Valor</div>
+      <div class="detail-text">{{ company.sd_propuesta_de_valor }}</div>
+    </div>
+    {% endif %}
+    {% if company.sd_business_model %}
+    <div class="detail-text-block">
+      <div class="detail-label">Modelo de Negocio</div>
+      <div class="detail-text">{{ company.sd_business_model }}</div>
+    </div>
+    {% endif %}
+    {% if company.sd_clientes %}
+    <div class="detail-text-block">
+      <div class="detail-label">Clientes</div>
+      <div class="detail-text">{{ company.sd_clientes }}</div>
+    </div>
+    {% endif %}
+    {% if company.sd_competidores %}
+    <div class="detail-text-block">
+      <div class="detail-label">Competidores</div>
+      <div class="detail-text">{{ company.sd_competidores }}</div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endif %}
 
-<!-- ═══════════════════════════════════════════════
-     SECCIÓN 4: Market Definition
-═══════════════════════════════════════════════ -->
+<!-- ── SECCIÓN 4: Market Definition ──────────────────── -->
 {% if company.mkt_tam_descripcion or company.mkt_tam_value or company.mkt_sam_descripcion or company.mkt_sam_value or company.mkt_som_descripcion or company.mkt_som_value %}
 <div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card-header"><span class="dc-card-title">Market Definition</span></div>
-  <div class="dc-card-body">
+  <div class="dc-card__header">
+    <h2 class="dc-card__title"><i class="fa-solid fa-chart-pie" style="color:var(--dc-accent);margin-right:6px;"></i>Market Definition</h2>
+  </div>
+  <div class="dc-card__body">
 
-    <!-- TAM / SAM / SOM resumen -->
-    <div class="air-grid-3" style="gap:12px;margin-bottom:24px;">
-      {% for prefix, label, color in mkt_summary %}
-      {% endfor %}
-      <!-- TAM -->
-      <div style="background:var(--dc-bg);border:1px solid var(--dc-border);border-radius:8px;padding:14px;">
-        <div style="font-size:11px;font-weight:700;color:#0284c7;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">TAM</div>
-        {% if company.mkt_tam_value %}<div style="font-size:20px;font-weight:700;color:var(--dc-text);">{{ company.mkt_tam_value }} M€</div>{% endif %}
-        {% if company.mkt_tam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);">{{ company.mkt_tam_volume }} unidades</div>{% endif %}
-        {% if company.mkt_tam_cagr %}<div style="font-size:12px;color:var(--dc-text-muted);">CAGR: {{ company.mkt_tam_cagr }}%</div>{% endif %}
-        {% if not company.mkt_tam_value and not company.mkt_tam_volume %}<span class="detail-empty">Sin datos</span>{% endif %}
+    <!-- TAM / SAM / SOM cards -->
+    <div class="at-grid-3" style="margin-bottom:24px;">
+
+      <div style="background:var(--dc-bg);border:1px solid #bfdbfe;border-radius:10px;padding:16px;">
+        <div style="font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">TAM · Mercado Total</div>
+        {% if company.mkt_tam_value %}
+          <div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_tam_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
+        {% endif %}
+        {% if company.mkt_tam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_tam_volume }} uds.</div>{% endif %}
+        {% if company.mkt_tam_cagr %}<div style="margin-top:8px;"><span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_tam_cagr }}%</span></div>{% endif %}
+        {% if not company.mkt_tam_value and not company.mkt_tam_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
       </div>
-      <!-- SAM -->
-      <div style="background:var(--dc-bg);border:1px solid var(--dc-border);border-radius:8px;padding:14px;">
-        <div style="font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">SAM</div>
-        {% if company.mkt_sam_value %}<div style="font-size:20px;font-weight:700;color:var(--dc-text);">{{ company.mkt_sam_value }} M€</div>{% endif %}
-        {% if company.mkt_sam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);">{{ company.mkt_sam_volume }} unidades</div>{% endif %}
-        {% if company.mkt_sam_cagr %}<div style="font-size:12px;color:var(--dc-text-muted);">CAGR: {{ company.mkt_sam_cagr }}%</div>{% endif %}
-        {% if not company.mkt_sam_value and not company.mkt_sam_volume %}<span class="detail-empty">Sin datos</span>{% endif %}
+
+      <div style="background:var(--dc-bg);border:1px solid #a7f3d0;border-radius:10px;padding:16px;">
+        <div style="font-size:10px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">SAM · Mercado Disponible</div>
+        {% if company.mkt_sam_value %}
+          <div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_sam_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
+        {% endif %}
+        {% if company.mkt_sam_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_sam_volume }} uds.</div>{% endif %}
+        {% if company.mkt_sam_cagr %}<div style="margin-top:8px;"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_sam_cagr }}%</span></div>{% endif %}
+        {% if not company.mkt_sam_value and not company.mkt_sam_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
       </div>
-      <!-- SOM -->
-      <div style="background:var(--dc-bg);border:1px solid var(--dc-border);border-radius:8px;padding:14px;">
-        <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">SOM</div>
-        {% if company.mkt_som_value %}<div style="font-size:20px;font-weight:700;color:var(--dc-text);">{{ company.mkt_som_value }} M€</div>{% endif %}
-        {% if company.mkt_som_volume %}<div style="font-size:12px;color:var(--dc-text-muted);">{{ company.mkt_som_volume }} unidades</div>{% endif %}
-        {% if company.mkt_som_cagr %}<div style="font-size:12px;color:var(--dc-text-muted);">CAGR: {{ company.mkt_som_cagr }}%</div>{% endif %}
-        {% if not company.mkt_som_value and not company.mkt_som_volume %}<span class="detail-empty">Sin datos</span>{% endif %}
+
+      <div style="background:var(--dc-bg);border:1px solid #ddd6fe;border-radius:10px;padding:16px;">
+        <div style="font-size:10px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">SOM · Mercado Objetivo</div>
+        {% if company.mkt_som_value %}
+          <div style="font-size:22px;font-weight:700;color:var(--dc-text);line-height:1;">{{ company.mkt_som_value }} <span style="font-size:13px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
+        {% endif %}
+        {% if company.mkt_som_volume %}<div style="font-size:12px;color:var(--dc-text-muted);margin-top:4px;">{{ company.mkt_som_volume }} uds.</div>{% endif %}
+        {% if company.mkt_som_cagr %}<div style="margin-top:8px;"><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">CAGR {{ company.mkt_som_cagr }}%</span></div>{% endif %}
+        {% if not company.mkt_som_value and not company.mkt_som_volume %}<span style="font-size:13px;color:var(--dc-text-muted);font-style:italic;">Sin datos</span>{% endif %}
       </div>
+
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      {% include "core/_detail_text.html" with label="Descripción TAM" value=company.mkt_tam_descripcion %}
-      {% include "core/_detail_text.html" with label="Descripción SAM" value=company.mkt_sam_descripcion %}
-      {% include "core/_detail_text.html" with label="Descripción SOM" value=company.mkt_som_descripcion %}
+    <!-- Descripciones -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      {% if company.mkt_tam_descripcion %}
+      <div class="detail-text-block">
+        <div class="detail-label">Descripción TAM</div>
+        <div class="detail-text">{{ company.mkt_tam_descripcion }}</div>
+      </div>
+      {% endif %}
+      {% if company.mkt_sam_descripcion %}
+      <div class="detail-text-block">
+        <div class="detail-label">Descripción SAM</div>
+        <div class="detail-text">{{ company.mkt_sam_descripcion }}</div>
+      </div>
+      {% endif %}
+      {% if company.mkt_som_descripcion %}
+      <div class="detail-text-block">
+        <div class="detail-label">Descripción SOM</div>
+        <div class="detail-text">{{ company.mkt_som_descripcion }}</div>
+      </div>
+      {% endif %}
     </div>
 
   </div>
 </div>
 {% endif %}
 
-<!-- ═══════════════════════════════════════════════
-     SECCIÓN 5: Exit Strategy
-═══════════════════════════════════════════════ -->
+<!-- ── SECCIÓN 5: Exit Strategy ───────────────────────── -->
 {% if company.exit_value or company.exit_descripcion or company.exit_empresas_comparables %}
 <div class="dc-card" style="margin-bottom:20px;">
-  <div class="dc-card-header"><span class="dc-card-title">Exit Strategy</span></div>
-  <div class="dc-card-body">
+  <div class="dc-card__header">
+    <h2 class="dc-card__title"><i class="fa-solid fa-flag-checkered" style="color:var(--dc-accent);margin-right:6px;"></i>Exit Strategy</h2>
+  </div>
+  <div class="dc-card__body">
     {% if company.exit_value %}
-      <div style="margin-bottom:16px;">
-        <div class="detail-label">Valor estimado de salida</div>
-        <div style="font-size:24px;font-weight:700;color:var(--dc-accent);">{{ company.exit_value }} M€</div>
+      <div style="margin-bottom:20px;padding:16px;background:var(--dc-bg);border-radius:10px;border:1px solid var(--dc-border);display:inline-block;">
+        <div class="detail-label" style="margin-bottom:4px;">Valor estimado de salida</div>
+        <div style="font-size:28px;font-weight:700;color:var(--dc-accent);">{{ company.exit_value }} <span style="font-size:16px;font-weight:500;color:var(--dc-text-muted);">M€</span></div>
       </div>
     {% endif %}
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      {% include "core/_detail_text.html" with label="Estrategia de venta" value=company.exit_descripcion %}
-      {% include "core/_detail_text.html" with label="Empresas comparables" value=company.exit_empresas_comparables %}
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      {% if company.exit_descripcion %}
+      <div class="detail-text-block">
+        <div class="detail-label">Estrategia de venta</div>
+        <div class="detail-text">{{ company.exit_descripcion }}</div>
+      </div>
+      {% endif %}
+      {% if company.exit_empresas_comparables %}
+      <div class="detail-text-block">
+        <div class="detail-label">Empresas comparables</div>
+        <div class="detail-text">{{ company.exit_empresas_comparables }}</div>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
 {% endif %}
 
+<!-- ── Estilos locales ────────────────────────────────── -->
 <style>
-  .detail-label { font-size: 11px; font-weight: 600; color: var(--dc-text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
-  .detail-value { font-size: 14px; color: var(--dc-text); }
-  .detail-empty { color: var(--dc-text-muted); font-style: italic; }
+  .detail-block         { display:flex; flex-direction:column; margin-bottom:14px; }
+  .detail-label         { font-size:10.5px; font-weight:600; color:var(--dc-text-muted);
+                          text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+  .detail-value         { font-size:14px; color:var(--dc-text); }
+  .detail-section-label { font-size:11px; font-weight:700; color:var(--dc-text-muted);
+                          text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+  .detail-text-block    { padding:14px; background:var(--dc-bg); border-radius:8px;
+                          border-left:3px solid var(--dc-accent); }
+  .detail-text          { font-size:14px; color:var(--dc-text); line-height:1.65;
+                          white-space:pre-wrap; margin-top:6px; }
 </style>
+
 {% endblock %}
