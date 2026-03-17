@@ -1308,6 +1308,14 @@ def kpi_create(request):
                     reproducibilidad_experimental=request.POST.get("reproducibilidad_experimental") or None,
                     coste_energetico=request.POST.get("coste_energetico") or None,
                     coste_materias_primas=request.POST.get("coste_materias_primas") or None,
+                    nuevos_leads_clientes=request.POST.get("nuevos_leads_clientes") or None,
+                    qualified_clientes=request.POST.get("qualified_clientes") or None,
+                    ndas_clientes_firmados=request.POST.get("ndas_clientes_firmados") or None,
+                    loi_clientes_firmados=request.POST.get("loi_clientes_firmados") or None,
+                    presupuestos_clientes_enviados=request.POST.get("presupuestos_clientes_enviados") or None,
+                    presupuestos_clientes_firmados=request.POST.get("presupuestos_clientes_firmados") or None,
+                    acuerdos_distribucion_firmados=request.POST.get("acuerdos_distribucion_firmados") or None,
+                    acuerdos_colaboracion_clientes_firmados=request.POST.get("acuerdos_colaboracion_clientes_firmados") or None,
                 )
                 return HttpResponseRedirect(reverse("kpis"))
             except CompanyInvestment.DoesNotExist:
@@ -1363,6 +1371,14 @@ def kpi_edit(request, kpi_id):
                 kpi.reproducibilidad_experimental = request.POST.get("reproducibilidad_experimental") or None
                 kpi.coste_energetico = request.POST.get("coste_energetico") or None
                 kpi.coste_materias_primas = request.POST.get("coste_materias_primas") or None
+                kpi.nuevos_leads_clientes = request.POST.get("nuevos_leads_clientes") or None
+                kpi.qualified_clientes = request.POST.get("qualified_clientes") or None
+                kpi.ndas_clientes_firmados = request.POST.get("ndas_clientes_firmados") or None
+                kpi.loi_clientes_firmados = request.POST.get("loi_clientes_firmados") or None
+                kpi.presupuestos_clientes_enviados = request.POST.get("presupuestos_clientes_enviados") or None
+                kpi.presupuestos_clientes_firmados = request.POST.get("presupuestos_clientes_firmados") or None
+                kpi.acuerdos_distribucion_firmados = request.POST.get("acuerdos_distribucion_firmados") or None
+                kpi.acuerdos_colaboracion_clientes_firmados = request.POST.get("acuerdos_colaboracion_clientes_firmados") or None
                 kpi.save()
                 return HttpResponseRedirect(reverse("kpis"))
             except CompanyInvestment.DoesNotExist:

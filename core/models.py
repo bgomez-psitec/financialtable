@@ -296,6 +296,32 @@ class KPIEmpresa(models.Model):
         "Comercialización", max_length=1, choices=SN_CHOICES, blank=True
     )
 
+    # ── Bus. Dev. ────────────────────────────────────────────────────────────
+    nuevos_leads_clientes = models.PositiveIntegerField(
+        "Nuevos Leads Clientes (contactados)", null=True, blank=True
+    )
+    qualified_clientes = models.PositiveIntegerField(
+        "Qualified Clientes (interesados y estudiando los productos)", null=True, blank=True
+    )
+    ndas_clientes_firmados = models.PositiveIntegerField(
+        "NDAs Clientes firmados", null=True, blank=True
+    )
+    loi_clientes_firmados = models.PositiveIntegerField(
+        "LOI Clientes firmados (vigentes)", null=True, blank=True
+    )
+    presupuestos_clientes_enviados = models.PositiveIntegerField(
+        "Presupuestos Clientes enviados pendiente de firma (< 3 meses)", null=True, blank=True
+    )
+    presupuestos_clientes_firmados = models.PositiveIntegerField(
+        "Presupuestos Clientes firmados", null=True, blank=True
+    )
+    acuerdos_distribucion_firmados = models.PositiveIntegerField(
+        "Acuerdos Distribución firmados", null=True, blank=True
+    )
+    acuerdos_colaboracion_clientes_firmados = models.PositiveIntegerField(
+        "Acuerdos Colaboración Clientes firmados", null=True, blank=True
+    )
+
     # ── Indicadores de rendimiento (%) ──────────────────────────────────────
     rendimiento_proceso = models.DecimalField(
         "Rendimiento del proceso (% real vs estimado)",

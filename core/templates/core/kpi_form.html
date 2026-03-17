@@ -227,6 +227,68 @@
     </div>
   </div>
 
+  <!-- ── Sección 3: Bus. Dev. ── -->
+  <div class="air-section" style="margin-bottom:20px;">
+    <div class="air-section-header">
+      <span>Bus. Dev.</span>
+    </div>
+    <div class="air-section-body">
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+
+        <div>
+          <label class="form-label">Nuevos Leads Clientes (contactados)</label>
+          <input type="number" name="nuevos_leads_clientes" class="form-control" min="0"
+                 value="{{ kpi.nuevos_leads_clientes }}">
+        </div>
+
+        <div>
+          <label class="form-label">Qualified Clientes (interesados y estudiando los productos)</label>
+          <input type="number" name="qualified_clientes" class="form-control" min="0"
+                 value="{{ kpi.qualified_clientes }}">
+        </div>
+
+        <div>
+          <label class="form-label">NDAs Clientes firmados</label>
+          <input type="number" name="ndas_clientes_firmados" class="form-control" min="0"
+                 value="{{ kpi.ndas_clientes_firmados }}">
+        </div>
+
+        <div>
+          <label class="form-label">LOI Clientes firmados (vigentes, no caído el interés)</label>
+          <input type="number" name="loi_clientes_firmados" class="form-control" min="0"
+                 value="{{ kpi.loi_clientes_firmados }}">
+        </div>
+
+        <div>
+          <label class="form-label">Presupuestos Clientes enviados pendiente de firma (&lt; 3 meses desde el ppto)</label>
+          <input type="number" name="presupuestos_clientes_enviados" class="form-control" min="0"
+                 value="{{ kpi.presupuestos_clientes_enviados }}">
+        </div>
+
+        <div>
+          <label class="form-label">Presupuestos Clientes firmados</label>
+          <input type="number" name="presupuestos_clientes_firmados" class="form-control" min="0"
+                 value="{{ kpi.presupuestos_clientes_firmados }}">
+        </div>
+
+        <div>
+          <label class="form-label">Acuerdos Distribución firmados</label>
+          <input type="number" name="acuerdos_distribucion_firmados" class="form-control" min="0"
+                 value="{{ kpi.acuerdos_distribucion_firmados }}">
+        </div>
+
+        <div>
+          <label class="form-label">Acuerdos Colaboración Clientes firmados</label>
+          <input type="number" name="acuerdos_colaboracion_clientes_firmados" class="form-control" min="0"
+                 value="{{ kpi.acuerdos_colaboracion_clientes_firmados }}">
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- Botones -->
   <div style="display:flex;gap:10px;margin-top:8px;margin-bottom:32px;">
     <button type="submit" class="btn-accent">
