@@ -2,97 +2,133 @@
 {% block title %}KPIs Empresas — DataContaBL{% endblock %}
 
 {% block content %}
-<div class="dc-content-header">
-  <h1 class="dc-content-title">KPIs del estado de empresas</h1>
-  <div class="dc-content-actions">
-    <a href="{% url 'kpi_create' %}" class="btn-accent">
-      <i class="fa-solid fa-plus"></i> Nuevo KPI
-    </a>
+
+<!-- ── Cabecera ── -->
+<div class="dc-page-header">
+  <h1 class="dc-page-title">KPIs del estado de empresas</h1>
+  <div class="dc-page-actions">
+    {% if request.user.is_staff %}
+      <a href="{% url 'kpi_create' %}" class="btn-accent">
+        <i class="fa-solid fa-plus"></i> Nuevo KPI
+      </a>
+    {% endif %}
   </div>
 </div>
 
-<!-- Filtros -->
+<!-- ── Filtros ── -->
 <div class="dc-card" style="margin-bottom:20px;">
-  <form method="get" class="dc-form">
-    <div class="air-grid-3" style="align-items:flex-end;gap:12px;">
-      <div>
-        <label class="form-label">Sociedad</label>
-        <select name="sociedad" class="form-control">
-          <option value="">Todas</option>
-          {% for c in companies %}
-            <option value="{{ c.pk }}" {% if filter_sociedad == c.pk|stringformat:"s" %}selected{% endif %}>
-              {{ c.gd_sociedad }}
-            </option>
-          {% endfor %}
-        </select>
+  <div class="dc-card__header">
+    <span class="dc-card__title"><i class="fa-solid fa-filter" style="margin-right:6px;color:var(--dc-accent);"></i>Filtros</span>
+  </div>
+  <div class="dc-card__body">
+    <form method="get" novalidate>
+      <div class="air-grid-3" style="gap:16px;align-items:flex-end;">
+        <div>
+          <label class="form-label" style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Sociedad</label>
+          <select name="sociedad" class="form-control" style="width:100%;border:1px solid var(--dc-border);border-radius:6px;padding:7px 10px;font-size:13px;color:var(--dc-text);background:#fff;">
+            <option value="">Todas</option>
+            {% for c in companies %}
+              <option value="{{ c.pk }}" {% if filter_sociedad == c.pk|stringformat:"s" %}selected{% endif %}>
+                {{ c.gd_sociedad }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="form-label" style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Año</label>
+          <select name="anio" class="form-control" style="width:100%;border:1px solid var(--dc-border);border-radius:6px;padding:7px 10px;font-size:13px;color:var(--dc-text);background:#fff;">
+            <option value="">Todos</option>
+            {% for y in years %}
+              <option value="{{ y }}" {% if filter_anio == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="form-label" style="font-size:11px;font-weight:600;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Trimestre</label>
+          <select name="trimestre" class="form-control" style="width:100%;border:1px solid var(--dc-border);border-radius:6px;padding:7px 10px;font-size:13px;color:var(--dc-text);background:#fff;">
+            <option value="">Todos</option>
+            {% for val, label in trimestres %}
+              <option value="{{ val }}" {% if filter_trimestre == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
       </div>
-      <div>
-        <label class="form-label">Año</label>
-        <select name="anio" class="form-control">
-          <option value="">Todos</option>
-          {% for y in years %}
-            <option value="{{ y }}" {% if filter_anio == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
-          {% endfor %}
-        </select>
+      <div style="margin-top:14px;display:flex;gap:8px;">
+        <button type="submit" class="btn-accent">
+          <i class="fa-solid fa-filter"></i> Filtrar
+        </button>
+        <a href="{% url 'kpis' %}" class="btn-ghost">
+          <i class="fa-solid fa-xmark"></i> Limpiar
+        </a>
       </div>
-      <div>
-        <label class="form-label">Trimestre</label>
-        <select name="trimestre" class="form-control">
-          <option value="">Todos</option>
-          {% for val, label in trimestres %}
-            <option value="{{ val }}" {% if filter_trimestre == val %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
-    <div style="margin-top:12px;display:flex;gap:8px;">
-      <button type="submit" class="btn-accent"><i class="fa-solid fa-filter"></i> Filtrar</button>
-      <a href="{% url 'kpis' %}" class="btn-ghost">Limpiar</a>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>
 
-<!-- Listado -->
+<!-- ── Listado ── -->
 <div class="dc-card">
-  <div class="dc-card-header">
-    <span class="dc-card-title">Listado de KPIs</span>
+  <div class="dc-card__header">
+    <span class="dc-card__title">Listado de KPIs</span>
     <span class="dc-badge dc-badge--grey">{{ kpis|length }} registro{{ kpis|length|pluralize:"s" }}</span>
   </div>
-  <div class="dc-card-body" style="padding:0;">
+  <div class="dc-card__body--flush dc-table-wrap">
     {% if kpis %}
       <table class="dc-table">
         <thead>
           <tr>
             <th>Sociedad</th>
-            <th>Año</th>
-            <th>Trimestre</th>
-            <th style="width:100px;text-align:right;">Acciones</th>
+            <th style="width:80px;">Año</th>
+            <th style="width:100px;">Trimestre</th>
+            {% if request.user.is_staff %}
+              <th style="width:90px;text-align:right;">Acciones</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
           {% for kpi in kpis %}
             <tr>
-              <td>{{ kpi.sociedad.gd_sociedad }}</td>
-              <td>{{ kpi.anio }}</td>
-              <td><span class="dc-badge dc-badge--green">{{ kpi.trimestre }}</span></td>
-              <td style="text-align:right;">
-                <a href="{% url 'kpi_edit' kpi.pk %}" class="btn-ghost" style="padding:4px 8px;font-size:12px;">
-                  <i class="fa-solid fa-pen"></i>
-                </a>
-                <a href="{% url 'kpi_delete' kpi.pk %}" class="btn-danger-ghost" style="padding:4px 8px;font-size:12px;">
-                  <i class="fa-solid fa-trash"></i>
-                </a>
+              <td style="font-weight:500;color:var(--dc-text);">{{ kpi.sociedad.gd_sociedad }}</td>
+              <td style="white-space:nowrap;">{{ kpi.anio }}</td>
+              <td style="white-space:nowrap;">
+                <span style="display:inline-flex;align-items:center;justify-content:center;
+                             width:38px;height:26px;border-radius:6px;font-size:12px;font-weight:700;
+                             {% if kpi.trimestre == 'Q1' %}background:#dbeafe;color:#1d4ed8;
+                             {% elif kpi.trimestre == 'Q2' %}background:#d1fae5;color:#065f46;
+                             {% elif kpi.trimestre == 'Q3' %}background:#fef3c7;color:#92400e;
+                             {% else %}background:#ede9fe;color:#5b21b6;{% endif %}">
+                  {{ kpi.trimestre }}
+                </span>
               </td>
+              {% if request.user.is_staff %}
+                <td style="text-align:right;white-space:nowrap;">
+                  <div style="display:flex;gap:4px;justify-content:flex-end;">
+                    <a href="{% url 'kpi_edit' kpi.pk %}" class="btn-icon" title="Editar">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="{% url 'kpi_delete' kpi.pk %}" class="btn-icon btn-icon--danger" title="Eliminar">
+                      <i class="fa-solid fa-trash"></i>
+                    </a>
+                  </div>
+                </td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <div style="padding:40px;text-align:center;color:var(--dc-text-muted);">
-        <i class="fa-solid fa-chart-line" style="font-size:32px;margin-bottom:12px;display:block;opacity:.3;"></i>
-        No hay KPIs registrados{% if filter_sociedad or filter_anio or filter_trimestre %} con los filtros actuales{% endif %}.
+      <div style="padding:48px;text-align:center;color:var(--dc-text-muted);">
+        <i class="fa-solid fa-chart-line" style="font-size:36px;margin-bottom:14px;display:block;opacity:.3;"></i>
+        <p style="margin:0 0 16px;">
+          No hay KPIs registrados{% if filter_sociedad or filter_anio or filter_trimestre %} con los filtros actuales{% endif %}.
+        </p>
+        {% if request.user.is_staff and not filter_sociedad and not filter_anio and not filter_trimestre %}
+          <a href="{% url 'kpi_create' %}" class="btn-accent">
+            <i class="fa-solid fa-plus"></i> Añadir primer KPI
+          </a>
+        {% endif %}
       </div>
     {% endif %}
   </div>
 </div>
+
 {% endblock %}
