@@ -31,6 +31,12 @@
             <span>Empresas</span>
           </a>
 
+          <a href="{% url 'kpis' %}"
+             class="dc-sidebar__link {% if active_page == 'kpis' %}active{% endif %}">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>KPIs Empresas</span>
+          </a>
+
           {% if request.user.is_staff %}
             <div class="dc-sidebar__section-label" style="margin-top:6px;">Administración</div>
             <a href="{% url 'users' %}"

@@ -239,6 +239,33 @@ class CompanyInvestment(models.Model):
         return self.gd_sociedad
 
 
+class KPIEmpresa(models.Model):
+    TRIMESTRE_CHOICES = [
+        ("Q1", "Q1"),
+        ("Q2", "Q2"),
+        ("Q3", "Q3"),
+        ("Q4", "Q4"),
+    ]
+
+    sociedad = models.ForeignKey(
+        CompanyInvestment,
+        verbose_name="Sociedad",
+        on_delete=models.CASCADE,
+        related_name="kpis",
+    )
+    anio = models.PositiveIntegerField("Año")
+    trimestre = models.CharField("Trimestre", max_length=2, choices=TRIMESTRE_CHOICES)
+
+    class Meta:
+        verbose_name = "KPI Empresa"
+        verbose_name_plural = "KPIs Empresas"
+        unique_together = [("sociedad", "anio", "trimestre")]
+        ordering = ["sociedad", "-anio", "trimestre"]
+
+    def __str__(self):
+        return f"{self.sociedad} — {self.anio} {self.trimestre}"
+
+
 class SMTPConfig(models.Model):
     host = models.CharField("Servidor SMTP", max_length=255, default="smtp.gmail.com")
     port = models.PositiveIntegerField("Puerto", default=587)

@@ -1,0 +1,98 @@
+{% extends "core/base.html" %}
+{% block title %}KPIs Empresas — DataContaBL{% endblock %}
+
+{% block content %}
+<div class="dc-content-header">
+  <h1 class="dc-content-title">KPIs del estado de empresas</h1>
+  <div class="dc-content-actions">
+    <a href="{% url 'kpi_create' %}" class="btn-accent">
+      <i class="fa-solid fa-plus"></i> Nuevo KPI
+    </a>
+  </div>
+</div>
+
+<!-- Filtros -->
+<div class="dc-card" style="margin-bottom:20px;">
+  <form method="get" class="dc-form">
+    <div class="air-grid-3" style="align-items:flex-end;gap:12px;">
+      <div>
+        <label class="form-label">Sociedad</label>
+        <select name="sociedad" class="form-control">
+          <option value="">Todas</option>
+          {% for c in companies %}
+            <option value="{{ c.pk }}" {% if filter_sociedad == c.pk|stringformat:"s" %}selected{% endif %}>
+              {{ c.gd_sociedad }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Año</label>
+        <select name="anio" class="form-control">
+          <option value="">Todos</option>
+          {% for y in years %}
+            <option value="{{ y }}" {% if filter_anio == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Trimestre</label>
+        <select name="trimestre" class="form-control">
+          <option value="">Todos</option>
+          {% for val, label in trimestres %}
+            <option value="{{ val }}" {% if filter_trimestre == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <button type="submit" class="btn-accent"><i class="fa-solid fa-filter"></i> Filtrar</button>
+      <a href="{% url 'kpis' %}" class="btn-ghost">Limpiar</a>
+    </div>
+  </form>
+</div>
+
+<!-- Listado -->
+<div class="dc-card">
+  <div class="dc-card-header">
+    <span class="dc-card-title">Listado de KPIs</span>
+    <span class="dc-badge dc-badge--grey">{{ kpis|length }} registro{{ kpis|length|pluralize:"s" }}</span>
+  </div>
+  <div class="dc-card-body" style="padding:0;">
+    {% if kpis %}
+      <table class="dc-table">
+        <thead>
+          <tr>
+            <th>Sociedad</th>
+            <th>Año</th>
+            <th>Trimestre</th>
+            <th style="width:100px;text-align:right;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for kpi in kpis %}
+            <tr>
+              <td>{{ kpi.sociedad.gd_sociedad }}</td>
+              <td>{{ kpi.anio }}</td>
+              <td><span class="dc-badge dc-badge--green">{{ kpi.trimestre }}</span></td>
+              <td style="text-align:right;">
+                <a href="{% url 'kpi_edit' kpi.pk %}" class="btn-ghost" style="padding:4px 8px;font-size:12px;">
+                  <i class="fa-solid fa-pen"></i>
+                </a>
+                <a href="{% url 'kpi_delete' kpi.pk %}" class="btn-danger-ghost" style="padding:4px 8px;font-size:12px;">
+                  <i class="fa-solid fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="padding:40px;text-align:center;color:var(--dc-text-muted);">
+        <i class="fa-solid fa-chart-line" style="font-size:32px;margin-bottom:12px;display:block;opacity:.3;"></i>
+        No hay KPIs registrados{% if filter_sociedad or filter_anio or filter_trimestre %} con los filtros actuales{% endif %}.
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

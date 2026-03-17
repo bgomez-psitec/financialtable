@@ -22,7 +22,7 @@ from .forms import CompanyInvestmentForm, SMTPConfigForm, SectorForm, UserCreate
 from .models import (
     CompanyInvestment, Estadio, Fondo, FondoMiembroEquipo,
     IndustrialSector, IndustrialSubSector,
-    SMTPConfig, Sector, TechSector, TechSubSector, VerticalClasification,
+    KPIEmpresa, SMTPConfig, Sector, TechSector, TechSubSector, VerticalClasification,
 )
 
 # ── Tablas de referencia (lookup tables) ─────────────────────────────────────
@@ -1209,3 +1209,124 @@ def password_reset_confirm(request, uidb64, token):
 def password_reset_complete(request):
     """Paso 4: contraseña cambiada con éxito."""
     return render(request, "core/password_reset_complete.html")
+
+
+# ── KPIs del estado de empresas ───────────────────────────────────────────────
+
+def _kpi_year_range():
+    """Rango de años disponibles para KPIs (2020 hasta año actual + 1)."""
+    current = dt.date.today().year
+    return list(range(2020, current + 2))
+
+
+@login_required
+def kpis(request):
+    qs = KPIEmpresa.objects.select_related("sociedad").all()
+    # Filtros opcionales via GET
+    sociedad_id = request.GET.get("sociedad", "")
+    anio = request.GET.get("anio", "")
+    trimestre = request.GET.get("trimestre", "")
+    if sociedad_id:
+        qs = qs.filter(sociedad_id=sociedad_id)
+    if anio:
+        qs = qs.filter(anio=anio)
+    if trimestre:
+        qs = qs.filter(trimestre=trimestre)
+
+    companies = CompanyInvestment.objects.all()
+    return render(request, "core/kpis.html", {
+        "kpis": qs,
+        "companies": companies,
+        "years": _kpi_year_range(),
+        "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
+        "filter_sociedad": sociedad_id,
+        "filter_anio": anio,
+        "filter_trimestre": trimestre,
+        "active_page": "kpis",
+    })
+
+
+@login_required
+def kpi_create(request):
+    companies = CompanyInvestment.objects.all()
+    years = _kpi_year_range()
+    error = None
+
+    if request.method == "POST":
+        sociedad_id = request.POST.get("sociedad", "")
+        anio = request.POST.get("anio", "")
+        trimestre = request.POST.get("trimestre", "")
+
+        if not sociedad_id or not anio or not trimestre:
+            error = "Todos los campos son obligatorios."
+        elif trimestre not in dict(KPIEmpresa.TRIMESTRE_CHOICES):
+            error = "Trimestre no válido."
+        else:
+            try:
+                sociedad = CompanyInvestment.objects.get(pk=sociedad_id)
+                KPIEmpresa.objects.create(sociedad=sociedad, anio=int(anio), trimestre=trimestre)
+                return HttpResponseRedirect(reverse("kpis"))
+            except CompanyInvestment.DoesNotExist:
+                error = "Empresa no encontrada."
+            except Exception:
+                error = "Ya existe un KPI para esa empresa, año y trimestre."
+
+    return render(request, "core/kpi_form.html", {
+        "companies": companies,
+        "years": years,
+        "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
+        "error": error,
+        "action": "Nuevo KPI",
+        "active_page": "kpis",
+    })
+
+
+@login_required
+def kpi_edit(request, kpi_id):
+    kpi = get_object_or_404(KPIEmpresa, pk=kpi_id)
+    companies = CompanyInvestment.objects.all()
+    years = _kpi_year_range()
+    error = None
+
+    if request.method == "POST":
+        sociedad_id = request.POST.get("sociedad", "")
+        anio = request.POST.get("anio", "")
+        trimestre = request.POST.get("trimestre", "")
+
+        if not sociedad_id or not anio or not trimestre:
+            error = "Todos los campos son obligatorios."
+        elif trimestre not in dict(KPIEmpresa.TRIMESTRE_CHOICES):
+            error = "Trimestre no válido."
+        else:
+            try:
+                kpi.sociedad = CompanyInvestment.objects.get(pk=sociedad_id)
+                kpi.anio = int(anio)
+                kpi.trimestre = trimestre
+                kpi.save()
+                return HttpResponseRedirect(reverse("kpis"))
+            except CompanyInvestment.DoesNotExist:
+                error = "Empresa no encontrada."
+            except Exception:
+                error = "Ya existe un KPI para esa empresa, año y trimestre."
+
+    return render(request, "core/kpi_form.html", {
+        "kpi": kpi,
+        "companies": companies,
+        "years": years,
+        "trimestres": KPIEmpresa.TRIMESTRE_CHOICES,
+        "error": error,
+        "action": "Editar KPI",
+        "active_page": "kpis",
+    })
+
+
+@login_required
+def kpi_delete(request, kpi_id):
+    kpi = get_object_or_404(KPIEmpresa, pk=kpi_id)
+    if request.method == "POST":
+        kpi.delete()
+        return HttpResponseRedirect(reverse("kpis"))
+    return render(request, "core/kpi_confirm_delete.html", {
+        "kpi": kpi,
+        "active_page": "kpis",
+    })

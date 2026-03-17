@@ -1,0 +1,87 @@
+{% extends "core/base.html" %}
+{% block title %}{{ action }} — DataContaBL{% endblock %}
+
+{% block content %}
+<div class="dc-content-header">
+  <h1 class="dc-content-title">{{ action }}</h1>
+</div>
+
+<div class="dc-card" style="max-width:560px;">
+  <div class="dc-card-body">
+
+    {% if error %}
+      <div class="dc-alert dc-alert--danger" style="margin-bottom:18px;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ error }}</span>
+      </div>
+    {% endif %}
+
+    <form method="post" class="dc-form" novalidate>
+      {% csrf_token %}
+
+      <div class="air-section">
+        <div class="air-section-body">
+
+          <div class="air-grid-1" style="gap:16px;">
+
+            <div>
+              <label class="form-label">Sociedad <span style="color:var(--dc-danger)">*</span></label>
+              <select name="sociedad" class="form-control" required>
+                <option value="">— Seleccionar empresa —</option>
+                {% for c in companies %}
+                  <option value="{{ c.pk }}"
+                    {% if kpi and kpi.sociedad_id == c.pk %}selected
+                    {% elif request.POST.sociedad == c.pk|stringformat:"s" %}selected
+                    {% endif %}>
+                    {{ c.gd_sociedad }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label">Año <span style="color:var(--dc-danger)">*</span></label>
+              <select name="anio" class="form-control" required>
+                <option value="">— Seleccionar año —</option>
+                {% for y in years %}
+                  <option value="{{ y }}"
+                    {% if kpi and kpi.anio == y %}selected
+                    {% elif request.POST.anio == y|stringformat:"s" %}selected
+                    {% endif %}>
+                    {{ y }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label">Trimestre <span style="color:var(--dc-danger)">*</span></label>
+              <select name="trimestre" class="form-control" required>
+                <option value="">— Seleccionar trimestre —</option>
+                {% for val, label in trimestres %}
+                  <option value="{{ val }}"
+                    {% if kpi and kpi.trimestre == val %}selected
+                    {% elif request.POST.trimestre == val %}selected
+                    {% endif %}>
+                    {{ label }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button type="submit" class="btn-accent">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar
+        </button>
+        <a href="{% url 'kpis' %}" class="btn-ghost">Cancelar</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
