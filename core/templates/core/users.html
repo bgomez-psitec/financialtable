@@ -56,6 +56,11 @@
                 {% else %}
                   <span class="dc-badge dc-badge--red">Inactivo</span>
                 {% endif %}
+                {% if user.is_staff %}
+                  <span class="dc-badge dc-badge--grey" style="margin-left:4px;">Admin</span>
+                {% elif user.profile.is_readonly %}
+                  <span class="dc-badge dc-badge--grey" style="margin-left:4px;">Solo lectura</span>
+                {% endif %}
               </td>
               <td class="actions-cell">
                 <a class="btn-ghost" href="{% url 'user_edit' user.id %}">

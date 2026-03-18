@@ -23,6 +23,7 @@ from .models import (
     CompanyInvestment, Estadio, Fondo, FondoMiembroEquipo,
     IndustrialSector, IndustrialSubSector,
     KPIEmpresa, SMTPConfig, Sector, TechSector, TechSubSector, VerticalClasification,
+    UserProfile,
 )
 
 # ── Tablas de referencia (lookup tables) ─────────────────────────────────────
@@ -63,6 +64,16 @@ def _mask_email(email):
     local, domain = email.split("@", 1)
     visible = min(2, len(local))
     return local[:visible] + "*" * max(0, len(local) - visible) + "@" + domain
+
+
+def _is_readonly(user):
+    """Devuelve True si el usuario es de solo lectura (staff nunca lo es)."""
+    if user.is_staff:
+        return False
+    try:
+        return user.profile.is_readonly
+    except Exception:
+        return False
 
 
 def _get_smtp():
@@ -245,7 +256,7 @@ def logout_view(request):
 @login_required(login_url=settings.LOGIN_URL)
 @user_passes_test(lambda u: u.is_staff, login_url="companies")
 def users(request):
-    all_users = User.objects.order_by("username")
+    all_users = User.objects.select_related("profile").order_by("username")
     invited   = request.GET.get("invited")   == "1"
     created   = request.GET.get("created")   == "1"
     reinvited = request.GET.get("reinvited") == "1"
@@ -265,6 +276,11 @@ def user_create(request):
             # Capturamos la contraseña en texto plano antes de hashearla
             plain_password = form.cleaned_data.get("password1", "")
             new_user = form.save()
+            # Guardar perfil con flag solo-lectura
+            is_readonly = request.POST.get("is_readonly") == "on"
+            profile, _ = UserProfile.objects.get_or_create(user=new_user)
+            profile.is_readonly = is_readonly
+            profile.save()
             # Guardar temporalmente en sesión para incluirla en el email de invitación
             request.session["invite_password"] = plain_password
             return HttpResponseRedirect(reverse("user_invite", args=[new_user.pk]))
@@ -274,7 +290,7 @@ def user_create(request):
     return render(
         request,
         "core/user_form.html",
-        {"form": form, "active_page": "users", "title": "Crear usuario"},
+        {"form": form, "active_page": "users", "title": "Crear usuario", "edit_is_readonly": False},
     )
 
 
@@ -371,10 +387,14 @@ def user_invite(request, user_id):
 @user_passes_test(lambda u: u.is_staff, login_url="companies")
 def user_edit(request, user_id):
     user = get_object_or_404(User, pk=user_id)
+    profile, _ = UserProfile.objects.get_or_create(user=user)
     if request.method == "POST":
         form = UserUpdateForm(request.POST, instance=user)
         if form.is_valid():
             updated_user = form.save()
+            # Actualizar flag solo-lectura
+            profile.is_readonly = request.POST.get("is_readonly") == "on"
+            profile.save()
             if request.user.pk == updated_user.pk and form.cleaned_data.get("password1"):
                 update_session_auth_hash(request, updated_user)
             return HttpResponseRedirect(reverse("users"))
@@ -384,7 +404,7 @@ def user_edit(request, user_id):
     return render(
         request,
         "core/user_form.html",
-        {"form": form, "active_page": "users", "title": "Editar usuario"},
+        {"form": form, "active_page": "users", "title": "Editar usuario", "edit_is_readonly": profile.is_readonly},
     )
 
 
@@ -533,6 +553,8 @@ def company_detail(request, company_id):
 
 @login_required(login_url=settings.LOGIN_URL)
 def company_edit(request, company_id):
+    if _is_readonly(request.user):
+        return HttpResponseRedirect(reverse("companies"))
     if request.user.is_staff:
         company = get_object_or_404(CompanyInvestment, pk=company_id)
     else:
@@ -1273,6 +1295,8 @@ def kpis(request):
 
 @login_required
 def kpi_create(request):
+    if _is_readonly(request.user):
+        return HttpResponseRedirect(reverse("kpis"))
     allowed = _allowed_companies(request.user)
     years = _kpi_year_range()
     error = None
@@ -1337,6 +1361,8 @@ def kpi_create(request):
 
 @login_required
 def kpi_edit(request, kpi_id):
+    if _is_readonly(request.user):
+        return HttpResponseRedirect(reverse("kpis"))
     allowed = _allowed_companies(request.user)
     kpi = get_object_or_404(KPIEmpresa, pk=kpi_id, sociedad__in=allowed)
     years = _kpi_year_range()
@@ -1401,6 +1427,8 @@ def kpi_edit(request, kpi_id):
 
 @login_required
 def kpi_clone(request, kpi_id):
+    if _is_readonly(request.user):
+        return HttpResponseRedirect(reverse("kpis"))
     allowed = _allowed_companies(request.user)
     src = get_object_or_404(KPIEmpresa, pk=kpi_id, sociedad__in=allowed)
     years = _kpi_year_range()
@@ -1470,6 +1498,8 @@ def kpi_clone(request, kpi_id):
 
 @login_required
 def kpi_delete(request, kpi_id):
+    if _is_readonly(request.user):
+        return HttpResponseRedirect(reverse("kpis"))
     allowed = _allowed_companies(request.user)
     kpi = get_object_or_404(KPIEmpresa, pk=kpi_id, sociedad__in=allowed)
     if request.method == "POST":

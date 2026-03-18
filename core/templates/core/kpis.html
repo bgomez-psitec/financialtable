@@ -7,7 +7,7 @@
 <div class="dc-page-header">
   <h1 class="dc-page-title">KPIs del estado de empresas</h1>
   <div class="dc-page-actions">
-    {% if request.user.is_staff %}
+    {% if not user_is_readonly %}
       <a href="{% url 'kpi_create' %}" class="btn-accent">
         <i class="fa-solid fa-plus"></i> Nuevo KPI
       </a>
@@ -79,7 +79,7 @@
             <th>Sociedad</th>
             <th style="width:80px;">Año</th>
             <th style="width:100px;">Trimestre</th>
-            {% if request.user.is_staff %}
+            {% if not user_is_readonly %}
               <th style="width:120px;text-align:right;">Acciones</th>
             {% endif %}
           </tr>
@@ -99,7 +99,7 @@
                   {{ kpi.trimestre }}
                 </span>
               </td>
-              {% if request.user.is_staff %}
+              {% if not user_is_readonly %}
                 <td style="text-align:right;white-space:nowrap;">
                   <div style="display:flex;gap:4px;justify-content:flex-end;">
                     <a href="{% url 'kpi_clone' kpi.pk %}" class="btn-icon btn-icon--accent" title="Clonar">
@@ -124,7 +124,7 @@
         <p style="margin:0 0 16px;">
           No hay KPIs registrados{% if filter_sociedad or filter_anio or filter_trimestre %} con los filtros actuales{% endif %}.
         </p>
-        {% if request.user.is_staff and not filter_sociedad and not filter_anio and not filter_trimestre %}
+        {% if not user_is_readonly and not filter_sociedad and not filter_anio and not filter_trimestre %}
           <a href="{% url 'kpi_create' %}" class="btn-accent">
             <i class="fa-solid fa-plus"></i> Añadir primer KPI
           </a>

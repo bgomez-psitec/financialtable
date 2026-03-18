@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Sector(models.Model):
@@ -393,3 +395,32 @@ class UserCompanyInvestment(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.company}"
+
+
+class UserProfile(models.Model):
+    """Perfil extendido de usuario — actualmente gestiona el flag solo-lectura."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="profile",
+    )
+    is_readonly = models.BooleanField(
+        "Solo lectura",
+        default=False,
+        help_text="Si está activo, el usuario puede ver datos pero no crear ni modificar.",
+    )
+
+    class Meta:
+        verbose_name = "Perfil de usuario"
+        verbose_name_plural = "Perfiles de usuario"
+
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def _auto_create_user_profile(sender, instance, created, **kwargs):
+    """Crea automáticamente un UserProfile cuando se crea un nuevo usuario."""
+    if created:
+        UserProfile.objects.get_or_create(user=instance)

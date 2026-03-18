@@ -121,11 +121,13 @@
                     <i class="fa-solid fa-eye"></i>
                   </a>
 
-                  <!-- Editar -->
+                  <!-- Editar (solo si no es solo lectura) -->
+                  {% if not user_is_readonly %}
                   <a class="btn-icon" href="{% url 'company_edit' company.id %}"
                      title="Editar empresa">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </a>
+                  {% endif %}
 
                   {% if request.user.is_staff %}
                     <!-- Invitar CEO -->

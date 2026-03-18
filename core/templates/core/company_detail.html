@@ -243,7 +243,7 @@
         <i class="fa-solid fa-chart-line" style="color:var(--dc-accent);margin-right:6px;"></i>
         KPIs registrados
       </h2>
-      {% if request.user.is_staff %}
+      {% if not user_is_readonly %}
         <a href="{% url 'kpi_create' %}?sociedad={{ company.pk }}" class="btn-accent" style="font-size:13px;">
           <i class="fa-solid fa-plus"></i> Nuevo KPI
         </a>
@@ -275,7 +275,7 @@
                 <div style="font-size:12px;color:var(--dc-text-muted);">{{ company.gd_sociedad }}</div>
               </div>
             </div>
-            {% if request.user.is_staff %}
+            {% if not user_is_readonly %}
             <div style="display:flex;gap:8px;">
               <a href="{% url 'kpi_edit' kpi.pk %}" class="btn-ghost" style="font-size:12px;padding:5px 10px;" title="Editar">
                 <i class="fa-solid fa-pen-to-square"></i>
@@ -292,7 +292,7 @@
         <div style="text-align:center;padding:48px 20px;">
           <i class="fa-solid fa-chart-line" style="font-size:40px;color:var(--dc-border);margin-bottom:14px;display:block;"></i>
           <p style="font-size:14px;color:var(--dc-text-muted);margin:0 0 18px;">No hay KPIs registrados para esta empresa.</p>
-          {% if request.user.is_staff %}
+          {% if not user_is_readonly %}
             <a href="{% url 'kpi_create' %}?sociedad={{ company.pk }}" class="btn-accent">
               <i class="fa-solid fa-plus"></i> Añadir primer KPI
             </a>
