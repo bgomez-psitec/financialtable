@@ -77,10 +77,11 @@
                       <i class="fa-solid fa-building" style="font-size:12px;color:var(--dc-text-muted);"></i>
                     </div>
                   {% endif %}
-                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-                               font-weight:500;color:var(--dc-text);">
+                  <a href="{% url 'company_detail' company.id %}"
+                     style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+                            font-weight:500;color:var(--dc-text);text-decoration:none;">
                     {{ company.gd_sociedad }}
-                  </span>
+                  </a>
                 </div>
               </td>
 
