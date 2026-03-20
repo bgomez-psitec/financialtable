@@ -66,9 +66,9 @@ printf "  Puerto de BD      [32769]: "
 read INPUT_DB_PORT
 DB_PORT="${INPUT_DB_PORT:-32769}"
 
-printf "  Nombre de la BD   [DataContaBL]: "
+printf "  Nombre de la BD   [Investee_Pro]: "
 read INPUT_DB_NAME
-DB_NAME="${INPUT_DB_NAME:-DataContaBL}"
+DB_NAME="${INPUT_DB_NAME:-Investee_Pro}"
 
 printf "  Usuario de BD     [DataContaBL]: "
 read INPUT_DB_USER
