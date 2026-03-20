@@ -251,41 +251,123 @@
     </div>
     <div class="dc-card__body">
       {% if kpis %}
-        <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;flex-direction:column;gap:12px;">
           {% for kpi in kpis %}
-          <div style="display:flex;align-items:center;justify-content:space-between;
-                      padding:14px 16px;background:var(--dc-bg);border:1px solid var(--dc-border);
-                      border-radius:8px;">
-            <div style="display:flex;align-items:center;gap:16px;">
-              <div style="text-align:center;min-width:48px;">
-                <div style="font-size:20px;font-weight:700;color:var(--dc-text);line-height:1;">{{ kpi.anio }}</div>
-                <div style="font-size:10px;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;">Año</div>
+          <div style="background:var(--dc-bg);border:1px solid var(--dc-border);border-radius:8px;overflow:hidden;">
+
+            <!-- ── Cabecera del KPI ── -->
+            <div style="display:flex;align-items:center;justify-content:space-between;
+                        padding:12px 16px;border-bottom:1px solid var(--dc-border);background:#fff;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="display:inline-flex;align-items:center;justify-content:center;
+                             width:38px;height:38px;border-radius:8px;font-size:13px;font-weight:700;
+                             {% if kpi.trimestre == 'Q1' %}background:#dbeafe;color:#1d4ed8;
+                             {% elif kpi.trimestre == 'Q2' %}background:#d1fae5;color:#065f46;
+                             {% elif kpi.trimestre == 'Q3' %}background:#fef3c7;color:#92400e;
+                             {% else %}background:#ede9fe;color:#5b21b6;{% endif %}">
+                  {{ kpi.trimestre }}
+                </span>
+                <span style="font-size:15px;font-weight:700;color:var(--dc-text);">{{ kpi.anio }} — {{ kpi.trimestre }}</span>
               </div>
-              <div style="width:1px;height:36px;background:var(--dc-border);"></div>
-              <span style="display:inline-flex;align-items:center;justify-content:center;
-                           width:42px;height:42px;border-radius:8px;font-size:13px;font-weight:700;
-                           {% if kpi.trimestre == 'Q1' %}background:#dbeafe;color:#1d4ed8;
-                           {% elif kpi.trimestre == 'Q2' %}background:#d1fae5;color:#065f46;
-                           {% elif kpi.trimestre == 'Q3' %}background:#fef3c7;color:#92400e;
-                           {% else %}background:#ede9fe;color:#5b21b6;{% endif %}">
-                {{ kpi.trimestre }}
-              </span>
-              <div>
-                <div style="font-size:14px;font-weight:600;color:var(--dc-text);">{{ kpi.anio }} — {{ kpi.trimestre }}</div>
-                <div style="font-size:12px;color:var(--dc-text-muted);">{{ company.gd_sociedad }}</div>
+              {% if not user_is_readonly %}
+              <div style="display:flex;gap:6px;">
+                <a href="{% url 'kpi_edit' kpi.pk %}" class="btn-icon" title="Editar">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+                <a href="{% url 'kpi_delete' kpi.pk %}" class="btn-icon btn-icon--danger" title="Eliminar">
+                  <i class="fa-solid fa-trash"></i>
+                </a>
               </div>
+              {% endif %}
             </div>
-            {% if not user_is_readonly %}
-            <div style="display:flex;gap:8px;">
-              <a href="{% url 'kpi_edit' kpi.pk %}" class="btn-ghost" style="font-size:12px;padding:5px 10px;" title="Editar">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </a>
-              <a href="{% url 'kpi_delete' kpi.pk %}" class="btn-danger-ghost" style="font-size:12px;padding:5px 10px;" title="Eliminar">
-                <i class="fa-solid fa-trash"></i>
-              </a>
-            </div>
-            {% endif %}
-          </div>
+
+            <!-- ── R&D ── -->
+            <div style="padding:14px 16px;">
+
+              <!-- TRL / MRL / Breakeven / Time to market -->
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
+                <div style="text-align:center;padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:11px;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">TRL</div>
+                  <div style="font-size:18px;font-weight:700;color:var(--dc-text);">{{ kpi.trl|default:"—" }}</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:11px;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">MRL</div>
+                  <div style="font-size:18px;font-weight:700;color:var(--dc-text);">{{ kpi.mrl|default:"—" }}</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:11px;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Breakeven Year</div>
+                  <div style="font-size:18px;font-weight:700;color:var(--dc-text);">{{ kpi.estimated_breakeven_year|default:"—" }}</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:11px;color:var(--dc-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Time to Market</div>
+                  <div style="font-size:18px;font-weight:700;color:var(--dc-text);">{{ kpi.estimated_time_to_market|default:"—" }}</div>
+                </div>
+              </div>
+
+              <!-- Hitos S/N -->
+              <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px;">
+
+                <!-- Tarjetas de cada hito -->
+                <div style="text-align:center;padding:8px 6px;border-radius:6px;border:1px solid var(--dc-border);background:{% if kpi.prueba_laboratorio_validada == 'S' %}#d1fae5{% elif kpi.prueba_laboratorio_validada == 'N' %}#fee2e2{% else %}var(--dc-bg-muted,#f8fafc){% endif %};">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:4px;line-height:1.3;">Prueba laboratorio validada</div>
+                  <div style="font-size:14px;font-weight:700;color:{% if kpi.prueba_laboratorio_validada == 'S' %}#065f46{% elif kpi.prueba_laboratorio_validada == 'N' %}#991b1b{% else %}var(--dc-text-muted){% endif %};">
+                    {{ kpi.prueba_laboratorio_validada|default:"—" }}
+                  </div>
+                </div>
+                <div style="text-align:center;padding:8px 6px;border-radius:6px;border:1px solid var(--dc-border);background:{% if kpi.pilot_plant_terminada == 'S' %}#d1fae5{% elif kpi.pilot_plant_terminada == 'N' %}#fee2e2{% else %}var(--dc-bg-muted,#f8fafc){% endif %};">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:4px;line-height:1.3;">Pilot Plant terminada</div>
+                  <div style="font-size:14px;font-weight:700;color:{% if kpi.pilot_plant_terminada == 'S' %}#065f46{% elif kpi.pilot_plant_terminada == 'N' %}#991b1b{% else %}var(--dc-text-muted){% endif %};">
+                    {{ kpi.pilot_plant_terminada|default:"—" }}
+                  </div>
+                </div>
+                <div style="text-align:center;padding:8px 6px;border-radius:6px;border:1px solid var(--dc-border);background:{% if kpi.producto_pilot_plant_validado == 'S' %}#d1fae5{% elif kpi.producto_pilot_plant_validado == 'N' %}#fee2e2{% else %}var(--dc-bg-muted,#f8fafc){% endif %};">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:4px;line-height:1.3;">Producto Pilot Plant / MVP validado</div>
+                  <div style="font-size:14px;font-weight:700;color:{% if kpi.producto_pilot_plant_validado == 'S' %}#065f46{% elif kpi.producto_pilot_plant_validado == 'N' %}#991b1b{% else %}var(--dc-text-muted){% endif %};">
+                    {{ kpi.producto_pilot_plant_validado|default:"—" }}
+                  </div>
+                </div>
+                <div style="text-align:center;padding:8px 6px;border-radius:6px;border:1px solid var(--dc-border);background:{% if kpi.flagship_plant_terminada == 'S' %}#d1fae5{% elif kpi.flagship_plant_terminada == 'N' %}#fee2e2{% else %}var(--dc-bg-muted,#f8fafc){% endif %};">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:4px;line-height:1.3;">Flagship Plant terminada</div>
+                  <div style="font-size:14px;font-weight:700;color:{% if kpi.flagship_plant_terminada == 'S' %}#065f46{% elif kpi.flagship_plant_terminada == 'N' %}#991b1b{% else %}var(--dc-text-muted){% endif %};">
+                    {{ kpi.flagship_plant_terminada|default:"—" }}
+                  </div>
+                </div>
+                <div style="text-align:center;padding:8px 6px;border-radius:6px;border:1px solid var(--dc-border);background:{% if kpi.producto_flagship_validado == 'S' %}#d1fae5{% elif kpi.producto_flagship_validado == 'N' %}#fee2e2{% else %}var(--dc-bg-muted,#f8fafc){% endif %};">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:4px;line-height:1.3;">Producto Flagship validado</div>
+                  <div style="font-size:14px;font-weight:700;color:{% if kpi.producto_flagship_validado == 'S' %}#065f46{% elif kpi.producto_flagship_validado == 'N' %}#991b1b{% else %}var(--dc-text-muted){% endif %};">
+                    {{ kpi.producto_flagship_validado|default:"—" }}
+                  </div>
+                </div>
+                <div style="text-align:center;padding:8px 6px;border-radius:6px;border:1px solid var(--dc-border);background:{% if kpi.comercializacion == 'S' %}#d1fae5{% elif kpi.comercializacion == 'N' %}#fee2e2{% else %}var(--dc-bg-muted,#f8fafc){% endif %};">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:4px;line-height:1.3;">Comercialización</div>
+                  <div style="font-size:14px;font-weight:700;color:{% if kpi.comercializacion == 'S' %}#065f46{% elif kpi.comercializacion == 'N' %}#991b1b{% else %}var(--dc-text-muted){% endif %};">
+                    {{ kpi.comercializacion|default:"—" }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Indicadores % -->
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+                <div style="padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:2px;line-height:1.3;">Rendimiento del proceso</div>
+                  <div style="font-size:16px;font-weight:700;color:var(--dc-text);">{% if kpi.rendimiento_proceso != None %}{{ kpi.rendimiento_proceso }}&thinsp;%{% else %}—{% endif %}</div>
+                </div>
+                <div style="padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:2px;line-height:1.3;">Reproducibilidad experimental</div>
+                  <div style="font-size:16px;font-weight:700;color:var(--dc-text);">{% if kpi.reproducibilidad_experimental != None %}{{ kpi.reproducibilidad_experimental }}&thinsp;%{% else %}—{% endif %}</div>
+                </div>
+                <div style="padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:2px;line-height:1.3;">Coste energético</div>
+                  <div style="font-size:16px;font-weight:700;color:var(--dc-text);">{% if kpi.coste_energetico != None %}{{ kpi.coste_energetico }}&thinsp;%{% else %}—{% endif %}</div>
+                </div>
+                <div style="padding:8px;background:var(--dc-bg-muted,#f8fafc);border-radius:6px;border:1px solid var(--dc-border);">
+                  <div style="font-size:10px;color:var(--dc-text-muted);margin-bottom:2px;line-height:1.3;">Coste materias primas</div>
+                  <div style="font-size:16px;font-weight:700;color:var(--dc-text);">{% if kpi.coste_materias_primas != None %}{{ kpi.coste_materias_primas }}&thinsp;%{% else %}—{% endif %}</div>
+                </div>
+              </div>
+
+            </div><!-- /R&D body -->
+          </div><!-- /kpi card -->
           {% endfor %}
         </div>
       {% else %}
